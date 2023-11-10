@@ -27,12 +27,12 @@ class ProductManager{
     }
     getAllProducts(){
         const ProductosAct = productos
-        console.log(ProductosAct)
+        return ProductosAct
     }
     getProductById(id){
         const pro = productos.find(x => x.id == id)
       const mostrar =  pro || "not found"
-        console.log(mostrar)
+        return mostrar
     }
 }
 const pro1 = new ProductManager("helado","frio",34,"dada","JS",13)

@@ -1,0 +1,20 @@
+[
+  {
+    "title": "ca",
+    "description": "sa",
+    "price": 14,
+    "thumbnail": "asdc",
+    "code": "eq",
+    "stock": 11,
+    "id": 1
+  },
+  {
+    "title": "helado",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "bbs",
+    "stock": 13,
+    "id": 2
+  }
+]
