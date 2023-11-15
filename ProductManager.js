@@ -86,7 +86,7 @@ class ProductManager {
 }
 async function funcAsyn() {
     const products = new ProductManager()
-    const pro1 = await products.addProduct("helado", "frio", 34, "dada", "JS")
+    const pro1 = await products.addProduct("helado", "frio", 34, "dada", "JS",23)
      const pro2 = await products.addProduct("helado","frio",34,"dada","papa",13)
      const leerTdos = await products.getAllProducts()
      const leer = await products.getProductById(1)
@@ -94,8 +94,11 @@ async function funcAsyn() {
      console.log(leer)
      const upload = await products.updateProd(1,"ca","sa",14,"asdc","eq",11)
      const leerTdos2 = await products.getAllProducts()
+     const pro3 = await products.addProduct("helado", "frio", 34, "dada", "afda",13)
      console.log(leerTdos2)
      const deleted = await products.deletedProd(2)
-     const pro3 = await products.addProduct("helado","frio",34,"dada","bbs",13)
+     const leerTdos3 = await products.getAllProducts()
+     console.log("todos desp del deleted")
+     console.log(leerTdos3)
 }
 funcAsyn()
