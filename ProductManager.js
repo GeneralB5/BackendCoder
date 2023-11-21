@@ -1,5 +1,4 @@
-
-const fs = require("fs");
+import fs from "fs"
 class ProductManager {
     static count = 0;///fijarse como hacer por si tiene ya strings
     productos = []
@@ -53,7 +52,6 @@ class ProductManager {
             const proFinal = prodParse.splice(index, 1, { title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id })
             const prodString = JSON.stringify(prodParse, null, 2)
             await fs.promises.writeFile(this.path, prodString)
-            console.log("splice =>" + proFinal)
         }else{
             console.log("No se ha encontrado producto")
         }
@@ -67,14 +65,12 @@ class ProductManager {
             const prods = await fs.promises.readFile(this.path, "utf-8")
             const prodParse = JSON.parse(prods)
             const index = prodParse.findIndex(x => x.id == id)
-            console.log(index)
             if(index != -1){
             const prodsLocal = this.productos
             prodsLocal.splice(index, 1)
             const proFinal = prodParse.splice(index, 1)
             const prodString = JSON.stringify(prodParse, null, 2)
             await fs.promises.writeFile(this.path, prodString)
-            console.log("splice =>" + proFinal)
         }else{
             console.log("No se ha encontrado producto")
         }
@@ -88,17 +84,33 @@ async function funcAsyn() {
     const products = new ProductManager()
     const pro1 = await products.addProduct("helado", "frio", 34, "dada", "JS",23)
      const pro2 = await products.addProduct("helado","frio",34,"dada","papa",13)
-     const leerTdos = await products.getAllProducts()
-     const leer = await products.getProductById(1)
-     console.log(leerTdos)
-     console.log(leer)
-     const upload = await products.updateProd(1,"ca","sa",14,"asdc","eq",11)
-     const leerTdos2 = await products.getAllProducts()
+    //  const leerTdos = await products.getAllProducts()
+    //  const leer = await products.getProductById(1)
+ 
+    //  const upload = await products.updateProd(1,"ca","sa",14,"asdc","eq",11)
+    //  const leerTdos2 = await products.getAllProducts()
      const pro3 = await products.addProduct("helado", "frio", 34, "dada", "afda",13)
-     console.log(leerTdos2)
-     const deleted = await products.deletedProd(2)
-     const leerTdos3 = await products.getAllProducts()
-     console.log("todos desp del deleted")
-     console.log(leerTdos3)
+ 
+    //  const deleted = await products.deletedProd(2)
+    //  const leerTdos3 = await products.getAllProducts()
+ 
 }
-funcAsyn()
+const  getAllProduct= async ()=>{
+    await funcAsyn()
+    const products =  new ProductManager()
+    const leerTdos = await products.getAllProducts()
+    return leerTdos
+}
+const getProductById= async(id)=>{
+    await funcAsyn()
+    const products = new ProductManager()
+    const leer = await products.getProductById(id)
+    return leer
+}
+const deletedDataById= async(id)=>{
+    await funcAsyn()
+    const products =  new ProductManager()
+    const deleted = await products.deletedProd(id)
+    return deleted
+}
+export {getAllProduct,getProductById,deletedDataById}

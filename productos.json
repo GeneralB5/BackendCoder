@@ -1,12 +1,21 @@
 [
   {
-    "title": "ca",
-    "description": "sa",
-    "price": 14,
-    "thumbnail": "asdc",
-    "code": "eq",
-    "stock": 11,
+    "title": "helado",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "JS",
+    "stock": 23,
     "id": 1
+  },
+  {
+    "title": "helado",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "papa",
+    "stock": 13,
+    "id": 2
   },
   {
     "title": "helado",
