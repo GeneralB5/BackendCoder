@@ -1,5 +1,5 @@
 import express, {json, urlencoded } from 'express';
-import {getAllProduct,getProductById,deletedDataById} from "./ProductManager.js"
+import {getAllProduct,uploadProd,deletedDataById,createProd} from "./ProductManager.js"
 const app = express()
 app.use(json())
 app.use(urlencoded({extended:true}))
@@ -33,25 +33,26 @@ app.delete('/productos/:id', async (req, res) => {
 })
 
 app.put('/productos/:id',async (req, res) => {
-  const Update = req.body; //no me funciona preg a profe
+  const Update = req.body;
   const id = req.params.id
-  console.log(Update)
   const Prods = await Send()
   const index = Prods.findIndex(x=>x.id  == id)
   if(index == -1){
     res.json({status:"ok", data :  'No hay '})
   }else{
+    const upload = await uploadProd(id,Update)
     Prods[index] = { ...Update , id : Prods[index].id}
-    res.status(200).json({status:"okey",data:[Update]})
+    res.status(200).json({status:"okey",data:Prods})
   }
     
 })
 
 app.post('/productos',async (req, res) => {
   const prodsParams = req.body
-  const Prods = await Send()
-  Prods.push(...prodsParams)
-    res.json(prodsParams)
+  // const Prods = await Send()
+  const created = await createProd(prodsParams)
+  //  Prods.push(created)
+    res.json(created)
   
 })
 
@@ -61,7 +62,12 @@ app.get('/productos/:id', async (req, res) => {
     const cache = await Send()
     console.log(cache)
     const encontrar = cache.find((x)=> x.id == idParams )
-  res.json(encontrar)
+    if(encontrar != -1){
+      res.json(encontrar)
+    }else{
+      res.json("no hay id que coincida")
+    }
+  
 })
 
 app.listen(port, () => {

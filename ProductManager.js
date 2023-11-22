@@ -13,12 +13,13 @@ class ProductManager {
             thumbnail != undefined &&
             code != undefined &&
             stock != undefined &&
-            !sig) {
-            console.log(typeof stock)
+            !sig){
             const id = ++ProductManager.count
-            const pro = this.productos.push({ title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id })
+            const producto={ title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id }
+            this.productos.push(producto)
             const prodString = JSON.stringify(this.productos, null, 2)
             await fs.promises.writeFile(this.path, prodString)
+            return producto
         } else {
             console.log(" no has ingresado datos suficientes")
         }
@@ -80,20 +81,12 @@ class ProductManager {
 
     }
 }
-async function funcAsyn() {
+async function funcAsyn(){
     const products = new ProductManager()
-    const pro1 = await products.addProduct("helado", "frio", 34, "dada", "JS",23)
-     const pro2 = await products.addProduct("helado","frio",34,"dada","papa",13)
-    //  const leerTdos = await products.getAllProducts()
-    //  const leer = await products.getProductById(1)
- 
-    //  const upload = await products.updateProd(1,"ca","sa",14,"asdc","eq",11)
-    //  const leerTdos2 = await products.getAllProducts()
-     const pro3 = await products.addProduct("helado", "frio", 34, "dada", "afda",13)
- 
-    //  const deleted = await products.deletedProd(2)
-    //  const leerTdos3 = await products.getAllProducts()
- 
+    await products.addProduct("helado1", "frio", 34, "dada", "JS",23)
+    await products.addProduct("helado2","frio",34,"dada","papa",13)
+    await products.addProduct("helado3", "frio", 34, "dada", "afda",13) 
+    await products.addProduct("helado4", "frio", 34, "d1a", "afassss",23) 
 }
 const  getAllProduct= async ()=>{
     await funcAsyn()
@@ -113,4 +106,18 @@ const deletedDataById= async(id)=>{
     const deleted = await products.deletedProd(id)
     return deleted
 }
-export {getAllProduct,getProductById,deletedDataById}
+const uploadProd= async(id,x)=>{
+    const products =  new ProductManager()
+    const uploadprod = await products.updateProd(id,x.title, x.description, x.price, x.thumbnail, x.code, x.stock)
+    console.log(uploadprod)
+    return uploadprod
+}
+const createProd = async(x)=>{
+    await funcAsyn()
+    const products =  new ProductManager()
+    
+    const NewProd = await products.addProduct(x.title, x.description, x.price, x.thumbnail, x.code, x.stock)
+    
+    return NewProd
+}
+export {getAllProduct,getProductById,deletedDataById,uploadProd,createProd}

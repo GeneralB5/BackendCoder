@@ -1,29 +1,11 @@
 [
   {
-    "title": "helado",
-    "description": "frio",
-    "price": 34,
-    "thumbnail": "dada",
-    "code": "JS",
-    "stock": 23,
-    "id": 1
-  },
-  {
-    "title": "helado",
-    "description": "frio",
-    "price": 34,
-    "thumbnail": "dada",
-    "code": "papa",
-    "stock": 13,
-    "id": 2
-  },
-  {
-    "title": "helado",
-    "description": "frio",
-    "price": 34,
-    "thumbnail": "dada",
-    "code": "afda",
-    "stock": 13,
-    "id": 3
+    "title": "ca",
+    "description": "sa",
+    "price": 14,
+    "thumbnail": "eba",
+    "code": "a13",
+    "stock": "012",
+    "id": 5
   }
 ]
