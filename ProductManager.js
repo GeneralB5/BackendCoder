@@ -1,23 +1,40 @@
 import fs from "fs"
 class ProductManager {
     static count = 0;///fijarse como hacer por si tiene ya strings
-    productos = []
+    static productos = []
     constructor() {
         this.path = "productos.json"
     }
-    async addProduct(title, description, price, thumbnail, code, stock) {
-        const sig = this.productos.find(x => x.code == code)
+    async addProduct(title, description, price, thumbnail, code, stock,categoria,status) {
+        let readedFile = undefined;
+        if(ProductManager.productos.length > 0){
+        readedFile = JSON.parse(await fs.promises.readFile(this.path, "utf-8"))
+    }else{
+        readedFile = await fs.promises.readFile(this.path, "utf-8")
+}
+        const sig = ProductManager.productos.find(x => x.code == code)
         if (title != undefined &&
             description != undefined &&
             price != undefined &&
             thumbnail != undefined &&
             code != undefined &&
             stock != undefined &&
+            categoria != undefined &&
+            status != undefined &&
             !sig){
+
             const id = ++ProductManager.count
-            const producto={ title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id }
-            this.productos.push(producto)
-            const prodString = JSON.stringify(this.productos, null, 2)
+            const producto={ title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock,categoria:categoria,status:status, id: id }
+            
+            ProductManager.productos.push(producto)
+            let mandar = undefined
+            if(ProductManager.productos.length > 1){
+                readedFile.push(producto)
+                mandar = readedFile  
+            }else{
+                mandar = ProductManager.productos
+            }
+            const prodString = JSON.stringify(mandar, null, 2)
             await fs.promises.writeFile(this.path, prodString)
             return producto
         } else {
@@ -36,28 +53,33 @@ class ProductManager {
         const mostrar = pro || "not found"
         return mostrar
     }
-    async updateProd(id, title, description, price, thumbnail, code, stock) {
+    async updateProd(id, title, description, price, thumbnail, code, stock, categoria, status) {
         if (id != undefined &&
             title != undefined &&
             description != undefined &&
             price != undefined &&
             thumbnail != undefined &&
             code != undefined &&
-            stock != undefined){
+            stock != undefined&&
+            categoria != undefined &&
+            status != undefined ){
             const prods = await fs.promises.readFile(this.path, "utf-8")
             const prodParse = JSON.parse(prods)
             const index = prodParse.findIndex(x => x.id == id)
             if(index != -1){
-            const prodsLocal = this.productos
-            prodsLocal.splice(index, 1, { title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id })
-            const proFinal = prodParse.splice(index, 1, { title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock, id: id })
+            const prodsLocal = ProductManager.productos
+            const x = prodsLocal[index]
+            prodsLocal.splice(index, 1, { title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock,categoria:categoria,status:status, id: id })
+            const proFinal = prodParse.splice(index, 1, { title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock,categoria:categoria,status:status, id: id })
             const prodString = JSON.stringify(prodParse, null, 2)
             await fs.promises.writeFile(this.path, prodString)
         }else{
             console.log("No se ha encontrado producto")
+            return false
         }
         } else {
             console.log(" no has ingresado datos suficientes")
+            return false
         }
 
     }
@@ -67,7 +89,7 @@ class ProductManager {
             const prodParse = JSON.parse(prods)
             const index = prodParse.findIndex(x => x.id == id)
             if(index != -1){
-            const prodsLocal = this.productos
+            const prodsLocal = ProductManager.productos
             prodsLocal.splice(index, 1)
             const proFinal = prodParse.splice(index, 1)
             const prodString = JSON.stringify(prodParse, null, 2)
@@ -83,11 +105,12 @@ class ProductManager {
 }
 async function funcAsyn(){
     const products = new ProductManager()
-    await products.addProduct("helado1", "frio", 34, "dada", "JS",23)
-    await products.addProduct("helado2","frio",34,"dada","papa",13)
-    await products.addProduct("helado3", "frio", 34, "dada", "afda",13) 
-    await products.addProduct("helado4", "frio", 34, "d1a", "afassss",23) 
+    await products.addProduct("helado1", "frio", 34, "dada", "JS",23,"Computacion",true)
+    await products.addProduct("helado2","frio",34,"dada","papa",13,"Computacion",true)
+    await products.addProduct("helado3", "frio", 34, "dada", "afda",13,"Computacion",true) 
+    await products.addProduct("helado4", "frio", 34, "d1a", "afassss",23,"Computacion",true) 
 }
+
 const  getAllProduct= async ()=>{
     await funcAsyn()
     const products =  new ProductManager()
@@ -108,16 +131,13 @@ const deletedDataById= async(id)=>{
 }
 const uploadProd= async(id,x)=>{
     const products =  new ProductManager()
-    const uploadprod = await products.updateProd(id,x.title, x.description, x.price, x.thumbnail, x.code, x.stock)
-    console.log(uploadprod)
+    const uploadprod = await products.updateProd(id,x.title, x.description, x.price, x.thumbnail, x.code, x.stock,x.categoria, x.status)
     return uploadprod
 }
 const createProd = async(x)=>{
     await funcAsyn()
-    const products =  new ProductManager()
-    
-    const NewProd = await products.addProduct(x.title, x.description, x.price, x.thumbnail, x.code, x.stock)
-    
+    const products =  new ProductManager()    
+    const NewProd = await products.addProduct(x.title, x.description, x.price, x.thumbnail, x.code, x.stock, x.categoria, x.status)
     return NewProd
 }
 export {getAllProduct,getProductById,deletedDataById,uploadProd,createProd}

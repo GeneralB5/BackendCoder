@@ -1,11 +1,57 @@
 [
   {
-    "title": "ca",
-    "description": "sa",
-    "price": 14,
-    "thumbnail": "eba",
-    "code": "a13",
-    "stock": "012",
+    "title": "helado1",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "JS",
+    "stock": 23,
+    "categoria": "Computacion",
+    "status": true,
+    "id": 1
+  },
+  {
+    "title": "helado2",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "papa",
+    "stock": 13,
+    "categoria": "Computacion",
+    "status": true,
+    "id": 2
+  },
+  {
+    "title": "helado3",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "afda",
+    "stock": 13,
+    "categoria": "Computacion",
+    "status": true,
+    "id": 3
+  },
+  {
+    "title": "helado4",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "d1a",
+    "code": "afassss",
+    "stock": 23,
+    "categoria": "Computacion",
+    "status": true,
+    "id": 4
+  },
+  {
+    "title": "heDADA",
+    "description": "calor",
+    "price": 34,
+    "thumbnail": "dada",
+    "code": "ANASHE",
+    "stock": 13,
+    "categoria": "Computacion",
+    "status": true,
     "id": 5
   }
 ]
