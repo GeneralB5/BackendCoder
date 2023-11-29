@@ -6,7 +6,7 @@
     "thumbnail": "dada",
     "code": "JS",
     "stock": 23,
-    "categoria": "Computacion",
+    "category": "Computacion",
     "status": true,
     "id": 1
   },
@@ -17,7 +17,7 @@
     "thumbnail": "dada",
     "code": "papa",
     "stock": 13,
-    "categoria": "Computacion",
+    "category": "Computacion",
     "status": true,
     "id": 2
   },
@@ -28,7 +28,7 @@
     "thumbnail": "dada",
     "code": "afda",
     "stock": 13,
-    "categoria": "Computacion",
+    "category": "Computacion",
     "status": true,
     "id": 3
   },
@@ -39,19 +39,8 @@
     "thumbnail": "d1a",
     "code": "afassss",
     "stock": 23,
-    "categoria": "Computacion",
+    "category": "Computacion",
     "status": true,
     "id": 4
-  },
-  {
-    "title": "heDADA",
-    "description": "calor",
-    "price": 34,
-    "thumbnail": "dada",
-    "code": "ANASHE",
-    "stock": 13,
-    "categoria": "Computacion",
-    "status": true,
-    "id": 5
   }
 ]

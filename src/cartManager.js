@@ -18,7 +18,7 @@ class Cart{
         console.log('hola')
         try {
             const cart = await this.readFiles()
-            const id = ++Cart.count     
+            const id = cart.length + 1      
             const sendCart = {id,Products:[]}  
             cart.push(sendCart)
             await fs.promises.writeFile(this.path,JSON.stringify(cart,null,2))    
@@ -56,6 +56,7 @@ class Cart{
             
     }
     }
+
     async readCart(id){
         const Mostrar = []
       const cartReaded =  await this.readFiles()
@@ -80,7 +81,7 @@ class Cart{
     }}else{ console.log("Has ingresado mal el id, prueba reintentarlo")}
     }
 }
-
+//funciones que se mandan al cartRoute
 const createCart= async()=>{
     const ToDo = new Cart()
     await ToDo.createCart()
