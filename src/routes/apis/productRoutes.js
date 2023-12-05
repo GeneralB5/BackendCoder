@@ -1,5 +1,6 @@
 import { Router} from "express";
-import {getAllProduct,uploadProd,deletedDataById,createProd} from "../ProductManager.js"
+import {getAllProduct,uploadProd,deletedDataById,createProd} from "../../ProductManager.js"
+
 const routes = Router()
 
 const getItAll= async () =>{
@@ -53,6 +54,7 @@ routes.post('/',async (req, res) => {
   // const Prods = await Send()
   const created = await createProd(prodsParams)
   //  Prods.push(created)
+  
     res.json(created)
   
 })
@@ -70,5 +72,6 @@ routes.get('/:id', async (req, res) => {
     }
   
 })
+
 
 export default routes

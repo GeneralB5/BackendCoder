@@ -1,0 +1,16 @@
+<div>
+    <h1>Tienda E-commerce</h1>
+    {{#if isAdmin}}
+        {{#each products}}
+        <div>
+            <h2>Name: {{this.title}}</h2>
+            <p>price: {{this.price}}</p>
+            <p>stock: {{this.stock}}</p>
+            <p>description: {{this.description}}</p>
+        </div>
+        <hr>
+        {{/each}}
+    {{else}}
+        <h2>No puedes ver los productos</h2>
+    {{/if}}
+</div>

@@ -1,0 +1,49 @@
+h1{
+    color: blue;
+}
+#DivContainer{
+margin-bottom: 20px;
+border: 1px solid black;
+}
+/* divs del agregado y delete del producto */
+.DivDeAgreySepa{
+    display: flex;
+    justify-content: space-around;
+}
+.DivDeAgreySepa input{
+    width: 200px;
+    height: 30px;
+    margin: auto 0;
+}
+.div-eliminar{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 230px;
+    border: 1px solid #000;
+    border-radius: 18px;
+    height: 130px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.div-de-form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width:230px ;
+    gap: 11px;
+    border: 1px solid #000;
+    border-radius: 18px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.div-de-form input{
+    margin: 5px 0;
+}
+.SubmitAgregar{
+    font-size: larger;
+    border-radius: 10px;
+    background: transparent;
+}
+.Formis{
+    display: flex;
+    flex-direction: column;
+}

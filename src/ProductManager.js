@@ -5,14 +5,21 @@ class ProductManager {
     constructor() {
         this.path = "productos.json"
     }
+    async readFiles(){
+        try {
+            const data = await fs.promises.readFile(this.path,'utf-8')
+        
+            return JSON.parse(data)
+        } catch (error) {
+            
+            return []
+        }
+    }
     async addProduct(title, description, price, thumbnail, code, stock,category,status) {
-        let readedFile = undefined;
-        if(ProductManager.productos.length > 0){
-        readedFile = JSON.parse(await fs.promises.readFile(this.path, "utf-8"))
-    }else{
-        readedFile = await fs.promises.readFile(this.path, "utf-8")
-}
+        const readedFile = await this.readFiles();
+        const sig2 = readedFile.find(x=> x.code == code )
         const sig = ProductManager.productos.find(x => x.code == code)
+        
         if (title != undefined &&
             description != undefined &&
             price != undefined &&
@@ -21,20 +28,24 @@ class ProductManager {
             stock != undefined &&
             category != undefined &&
             status != undefined &&
-            !sig){
+            !sig&&
+            !sig2
+            ){
 
-            const id = ++ProductManager.count
+                // agarro el utlimo objeto de mi array, obtengo el id y le sumo 1 para que siga en el otro objeto
+            let idss =0     ;
+            if(readedFile.length > 0){
+               idss =  readedFile[readedFile.length - 1].id
+            }else{
+                idss == 0
+            }
+            const id = idss + 1
             const producto={ title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock,category:category,status:status, id: id }
             
             ProductManager.productos.push(producto)
-            let mandar = undefined
-            if(ProductManager.productos.length > 1){
-                readedFile.push(producto)
-                mandar = readedFile  
-            }else{
-                mandar = ProductManager.productos
-            }
-            const prodString = JSON.stringify(mandar, null, 2)
+            readedFile.push(producto)
+        
+            const prodString = JSON.stringify(readedFile, null, 2)
             await fs.promises.writeFile(this.path, prodString)
             return producto
         } else {
@@ -107,10 +118,7 @@ class ProductManager {
 //creo algunos productoss
 async function funcAsyn(){
     const products = new ProductManager()
-    await products.addProduct("helado1", "frio", 34, "dada", "JS",23,"Computacion",true)
-    await products.addProduct("helado2","frio",34,"dada","papa",13,"Computacion",true)
-    await products.addProduct("helado3", "frio", 34, "dada", "afda",13,"Computacion",true) 
-    await products.addProduct("helado4", "frio", 34, "d1a", "afassss",23,"Computacion",true) 
+    
 }
 // hago las funciones para que se manden al router
 const  getAllProduct= async ()=>{

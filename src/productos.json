@@ -1,21 +1,10 @@
 [
   {
-    "title": "helado1",
-    "description": "frio",
-    "price": 34,
-    "thumbnail": "dada",
-    "code": "JS",
-    "stock": 23,
-    "category": "Computacion",
-    "status": true,
-    "id": 1
-  },
-  {
     "title": "helado2",
     "description": "frio",
-    "price": 34,
+    "price": 12,
     "thumbnail": "dada",
-    "code": "papa",
+    "code": "rastas",
     "stock": 13,
     "category": "Computacion",
     "status": true,
@@ -42,5 +31,16 @@
     "category": "Computacion",
     "status": true,
     "id": 4
+  },
+  {
+    "title": "helado5",
+    "description": "frio",
+    "price": 34,
+    "thumbnail": "d1a",
+    "code": "js",
+    "stock": 23,
+    "category": "Computacion",
+    "status": true,
+    "id": 5
   }
 ]

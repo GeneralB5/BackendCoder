@@ -1,5 +1,5 @@
 import{ Router } from "express";
-import { createCart,addCart,seeCart } from "../cartManager.js";
+import { createCart,addCart,seeCart } from '../../cartManager.js'
 const Cartroutes = Router()
 //primer post manda a crear carrito
 Cartroutes.post('/',async (req, res) => {

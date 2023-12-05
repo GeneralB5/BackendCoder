@@ -1,0 +1,28 @@
+<div>
+    <h1>Tienda E-commerce but real time</h1>
+    <div class="DivDeAgreySepa">
+        <div class="div-eliminar">
+            <h2>eliminar products</h2>
+    <input id="deleteProd" type="text"  placeholder="id del producto que decea eliminar">
+    </div>
+    <div class="div-de-form"> 
+        <h2>Agregar productos</h2>
+    <form id="formDeAgregarProds" class="Formis" action="">
+        <input id="title"  type="text" name="title"  placeholder="Title" >
+        <input id="price" type="text" name="price"  placeholder="Price">
+        <input id="description" type="text" name="description"  placeholder="Description">
+        <input id="category" type="text" name="category"  placeholder="Category">
+        <input id="code" type="text" name="code"  placeholder="Code">
+        <input id="thumbnail" type="text" name="thumbnail"  placeholder="Thumbnail">
+        <input id="stock" type="text" name="stock"  placeholder="Stock">
+        <input id="status" type="text" name="status"  placeholder="Status">
+        <button id="SubmitAgregados" class="SubmitAgregar" type="submit">Agregar producto</button>
+    </form>
+    </div>
+    </div>
+    <div id="DivContainer">
+
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeProd.js"></script>
