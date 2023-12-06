@@ -10,7 +10,7 @@ viewRoutes.get('/',(req,res)=>{
   })
 
   viewRoutes.get('/home', async (req,res)=>{
-    res.render('home',{
+    res.render('home.hbs',{
       name:"toma",
       Title:"E-commerce",
       isAdmin: true,
@@ -19,7 +19,7 @@ viewRoutes.get('/',(req,res)=>{
   })
 
   viewRoutes.get('/realtimeproducts', async (req,res)=>{
-    res.render('realTimeproducts',{
+    res.render('realTimeproducts.hbs',{
       name:"toma",
       Title:"E-commerce",
       isAdmin: true,
