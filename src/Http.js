@@ -1,4 +1,5 @@
 import express, {json, urlencoded } from 'express';
+import  path  from "path"
 import handlebars from 'express-handlebars';
 //rutas
 import routes from './routes/apis/productRoutes.js';
@@ -10,7 +11,7 @@ import { createProd, deletedDataById, getAllProduct, getProductById } from './Pr
 const app = express()
 app.use(json())
 app.use(urlencoded({extended:true}))
-app.use(express.static( __dirname + '/public'))
+app.use(express.static(path.join(__dirname + '/public')))
 
 app.use('/api/productos',routes)
 app.use('/api/cart',Cartroutes)
