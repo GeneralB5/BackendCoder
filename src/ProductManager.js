@@ -1,9 +1,10 @@
 import fs from "fs"
+
 class ProductManager {
     static count = 0;///fijarse como hacer por si tiene ya strings
     static productos = []
     constructor() {
-        this.path = "productos.json"
+        this.path = "src/productos.json"
     }
     async readFiles(){
         try {
