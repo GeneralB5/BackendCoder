@@ -63,7 +63,7 @@ socket.on("products",data=>{
         const description = document.createElement('p')
         description.textContent = "Description : " + element.description
         const id = document.createElement('p')
-        id.textContent = "id : " + element.id
+        id.textContent = "id : " + element._id
         const hr = document.createElement('hr')
         divsInsider.appendChild(price)
         divsInsider.appendChild(name)

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { getAllProduct } from "../ProductManager.js";
+import daoProducts from "../daos/mongoDB/daoProducts.js";
+const prodServices = new daoProducts()
 const viewRoutes = Router()
 
 viewRoutes.get('/',(req,res)=>{
@@ -14,7 +15,7 @@ viewRoutes.get('/',(req,res)=>{
       name:"toma",
       Title:"E-commerce",
       isAdmin: true,
-      products: await getAllProduct()
+      products: await prodServices.seeAllProducts()
     })
   })
 
@@ -23,7 +24,12 @@ viewRoutes.get('/',(req,res)=>{
       name:"toma",
       Title:"E-commerce",
       isAdmin: true,
-      products: await getAllProduct()
+      products: await prodServices.seeAllProducts()
+    })
+  })
+  viewRoutes.get('/chatRealTime',async(req,res)=>{
+    res.render('chat',{
+      name:'chat'
     })
   })
 export default viewRoutes

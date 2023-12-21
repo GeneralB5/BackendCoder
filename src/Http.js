@@ -7,15 +7,22 @@ import Cartroutes from './routes/apis/cartRoute.js';
 import viewRoutes from './routes/viewsRouter.js';
 import __dirname from './utils.js';
 import { Server } from 'socket.io';
-import { createProd, deletedDataById, getAllProduct, getProductById } from './ProductManager.js';
+import daoProducts from './daos/mongoDB/daoProducts.js';
+import connectDb from './config/indexDb.js';
+import userDao from './daos/mongoDB/daoUser.js';
 const app = express()
+//conectar a db
+connectDb()
+///services
+const prodServices = new daoProducts()
+const userServices = new userDao()
+//modificar el de arriba
 app.use(json())
 app.use(urlencoded({extended:true}))
 app.use(express.static(path.join(__dirname + '/public')))
-
+//apis cart y products
 app.use('/api/productos',routes)
 app.use('/api/cart',Cartroutes)
-
 //motor de plantilla
 app.engine('hbs',handlebars.engine({
 extname : 'hbs'
@@ -39,52 +46,40 @@ const httpsServer = app.listen(port, (err) =>{
 
 
 const io = new Server(httpsServer)
-
-///prueba de post y del
-
-
-
-// app.post('/views/realtimeproducts/add',async (req, res) => {
-//   const prodsParams = req.body
-//   ///crea el producto
-//   await createProd(prodsParams)
-//   io.emit("products", await getAllProduct())
-//     res.send("se ha creado correctamente")
-  
-// })
-
-// app.delete('/views/realtimeproducts/:id', async (req, res) => {
-//   const id = req.params.id
-//   const Prods = await deletedDataById(id)
-//   io.emit("products", await getAllProduct())
-//     res.send('se ha borrado correctamente')
-// })
-
-
-
-/////////////////////// Hecho de otra manera
+//////////// IO server
 let Products = 0
 io.on('connect', async (socket)=>{
   //recibir productos
   socket.on('agregar', async (data)=>{
-    
-    await createProd(data)
+    await prodServices.createProds(data)
+    io.emit("products",await prodServices.seeAllProducts())
   })
   ///delete del producto segun el nombre enviado
   socket.on('delete', async data=>{
-    const prod =  await getAllProduct()
-    const findedProd= prod.find( x=> x.id == data )
+    const prod = await  prodServices.seeAllProducts()
+    const findedProd= prod.find( x=> x._id == data )
     console.log(findedProd)
     /// me fijo si el producto existe
     if(findedProd != undefined){
-    await deletedDataById(findedProd.id)
+    await prodServices.deletedProd(data)
+    io.emit("products",await prodServices.seeAllProducts())
   }else{
     console.log(`no se encontro producto con el nombre ${data}`)
   }
   })
 
-  /// emito el array de prouctos que sale de la funcion getAllProduct()
-  io.emit("products",await getAllProduct())
+  /// emito el array de prouctos que sale de la funcion seeAllProduct()
+  io.emit("products",await prodServices.seeAllProducts())
+
+//////////IO chat
+io.emit('chat', await userServices.readMessages())
+socket.on('mensajesEnviados', async data=>{
+  console.log(data)
+  await userServices.addMessages(data.nick,data.message)
+  
+io.emit('chat', await userServices.readMessages())
+})
+
 
 })
 io.on('disconnected', ()=>{
