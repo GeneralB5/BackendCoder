@@ -4,6 +4,7 @@ class daoProducts{
     constructor(){
 
     }
+    //see all
    async seeAllProducts(){
     try {
         return await prodsModel.find()
@@ -11,6 +12,7 @@ class daoProducts{
      console.log(error)   
     }
     }
+    ///see only one
    async seeProductId(id){
     try {
         return await prodsModel.findById({_id:id})        
@@ -19,10 +21,33 @@ class daoProducts{
     }
 
     }
+    ////see with limitations
+    async seeProductsLimit(limit,sort,page,query){
+        try {
+            
+            const pa = page || 1
+            const li = limit || 10
+            const sorted = {price:sort || 'asc'}
+            let querys = {}
+            if(isNaN(query) && query != undefined){
+            querys = {title: {$in:query}}
+        }
+        if(!isNaN(query)&& query != undefined){
+             querys = {price: {$in:query}}
+        }
+        
+            return await prodsModel.paginate(querys,{limit:li,sort:sorted,page:pa,lean:true})        
+        } catch (error) {
+            console.log(error)
+        }
+    
+        }
+    ////create
     async createProds(prod){  
         try {
-            const signal = await prodsModel.findOne({code:prod.code})
-            if(signal == []){   
+            const signal = await prodsModel.find({code:prod.code})
+            console.log(signal.length)
+            if(signal.length == 0){   
             return await prodsModel.create(prod)
         }else{
             console.error('Ya existe');

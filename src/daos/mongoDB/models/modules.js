@@ -1,5 +1,5 @@
 import {Schema,model} from 'mongoose'
-
+import mongoosePaginate from 'mongoose-paginate-v2'
 const productCollection = 'products'
 const cartCollection = 'carts'
 const userCollection = 'messages'
@@ -60,7 +60,7 @@ const  prodsSchema = new Schema({
 cartsSchema.pre('findOne',function () {
     this.populate('products.id')
 })
-
+prodsSchema.plugin(mongoosePaginate)
 const prodsModel = model(productCollection,prodsSchema)
 const cartsModel = model(cartCollection,cartsSchema)
 const userModel = model(userCollection,userSchema)
