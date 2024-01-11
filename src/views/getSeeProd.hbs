@@ -1,5 +1,8 @@
 <div>
     <h1>Tienda E-commerce</h1>
+    {{#if userName }}
+    <h2>Bienvenido {{userName}} {{userLastname}} </h2>
+    {{/if}}
     {{#if isAdmin}}
         {{#each products}}
         <div>

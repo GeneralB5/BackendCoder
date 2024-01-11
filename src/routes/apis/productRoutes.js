@@ -1,9 +1,13 @@
 import { Router} from "express";
 import daoProducts from "../../daos/mongoDB/daoProducts.js";
+import UsersDB from "../../daos/mongoDB/daoUsersdb.js";
 const prodsServices = new daoProducts()
+const userServices = new UsersDB()
 const routes = Router()
 routes.get('/gets',async (req, res) => {
   const {limit,numPage,sort,query} = req.query
+  const email = req.session.user.email
+  const {first_name,last_name} = await userServices.searchUser(email)
   const {
     docs,
         hasPrevPage,
@@ -15,6 +19,8 @@ routes.get('/gets',async (req, res) => {
   res.render('getSeeProd',{
     name:"comercio",
     Title:"E-commerce",
+    userName:first_name,
+    userLastname:last_name,
     isAdmin: true,
     products:docs,
     hasPrevPage,

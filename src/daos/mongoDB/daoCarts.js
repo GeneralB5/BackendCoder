@@ -36,7 +36,7 @@ class daoCarts{
                 const prodQuan = {id:prod, quant:1}
                  return await cartsModel.updateOne({_id:idCart},{$push:{products:prodQuan}})
              }else{
-                 return await cartsModel.updateOne(
+                  await cartsModel.updateOne(
                      {_id:idCart}
                  ,{$inc:{'products.$[e].quant':1}}
                  ,{arrayFilters:[
@@ -44,7 +44,7 @@ class daoCarts{
                  ],
              multi:true
          })
-        
+         return "se ha sumado 1"
              }}else{
                 new console.error("no se encontro producto");
              }
