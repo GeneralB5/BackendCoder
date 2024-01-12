@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname + '/public')))
 app.use('/api/productos',routes)
 app.use('/api/cart',Cartroutes)
 app.use('/api/session',logsRoutes)
-app.use('/api/users',usersRoutes)
+app.use('/',usersRoutes)
 //motor de plantilla
 app.engine('hbs',handlebars.engine({
 extname : 'hbs'

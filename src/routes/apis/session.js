@@ -2,10 +2,6 @@ import{ Router } from "express";
 import UsersDB from "../../daos/mongoDB/daoUsersdb.js";
 const userServices = new UsersDB()
 const logsRoutes = Router()
-///login
-logsRoutes.get('/login',async (req,res)=>{
-res.render("login")
-})
 ///login POST
 logsRoutes.post('/login',async (req,res)=>{
     const {email,password } = req.body
@@ -13,6 +9,15 @@ logsRoutes.post('/login',async (req,res)=>{
     if (email.trim() === '' || password.trim() === '') {
         return res.send('Faltan campos')
     }
+    if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
+        req.session.user = {
+            email: email,
+            rol: "admin"
+        }
+      return  res.redirect('/api/productos/gets')
+    }
+
+
     const users = await userServices.searchUser(email)
     
     if (users == null) {
@@ -24,20 +29,12 @@ logsRoutes.post('/login',async (req,res)=>{
         return res.send('email o contraseña equivocado')
     }
 
-    let rol = 'usuario'
-    
-    if(email === 'adminCoder@coder.com' && password === 'adminCod3r123'){
-        rol = "admin"
-    }
+    console.log(email)
     req.session.user = {
-        email: users.email,
-        rol: rol
+        email: email,
+        rol: 'usuario'
     }
     res.redirect('/api/productos/gets')///para el login redirect a prod
-})
-///Register
-logsRoutes.get('/register',async (req,res)=>{
-    res.render("register")
 })
 //agregar
 logsRoutes.post('/register',async (req,res)=>{
@@ -56,5 +53,11 @@ if(Finded != null){
 const crearUser = await userServices.createUser(first_name,last_name,email,age,password)
 res.status(200).send(`Usuario creado correctamente`)
 })
-
+///logout
+logsRoutes.post('/logout',async (req,res)=>{
+req.session.destroy(err=>{
+    if (err) return res.send({status: 'error', error: err})
+})
+res.send("Se a deslogueado correctamente")
+})
 export default logsRoutes

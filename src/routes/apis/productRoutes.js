@@ -7,7 +7,17 @@ const routes = Router()
 routes.get('/gets',async (req, res) => {
   const {limit,numPage,sort,query} = req.query
   const email = req.session.user.email
-  const {first_name,last_name} = await userServices.searchUser(email)
+  let fn = ''
+  let ln = ''
+  if(email != "adminCoder@coder.com"){
+ const {first_name,last_name} = await userServices.searchUser(email)
+ fn = first_name
+ ln = last_name
+}else{
+ fn = email
+ ln = 'admin'
+ 
+}
   const {
     docs,
         hasPrevPage,
@@ -19,8 +29,8 @@ routes.get('/gets',async (req, res) => {
   res.render('getSeeProd',{
     name:"comercio",
     Title:"E-commerce",
-    userName:first_name,
-    userLastname:last_name,
+    userName:fn,
+    userLastname:ln,
     isAdmin: true,
     products:docs,
     hasPrevPage,
