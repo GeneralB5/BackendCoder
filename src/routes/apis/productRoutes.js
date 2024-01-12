@@ -6,9 +6,11 @@ const userServices = new UsersDB()
 const routes = Router()
 routes.get('/gets',async (req, res) => {
   const {limit,numPage,sort,query} = req.query
+  let fn = undefined
+  let ln = undefined
+console.log(req.session.user)
+  if(req.session.user){
   const email = req.session.user.email
-  let fn = ''
-  let ln = ''
   if(email != "adminCoder@coder.com"){
  const {first_name,last_name} = await userServices.searchUser(email)
  fn = first_name
@@ -17,6 +19,7 @@ routes.get('/gets',async (req, res) => {
  fn = email
  ln = 'admin'
  
+}
 }
   const {
     docs,
