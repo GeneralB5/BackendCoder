@@ -15,9 +15,14 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import usersRoutes from './routes/apis/userRouter.js';
+import passport from 'passport';
+import initializePassport from './config/passportConfig.js';
 const app = express()
 //conectar a db
 connectDb()
+
+
+
 //cookie y session
 app.use(cookieParser('p@l@br@seCret@'))
 app.use(session({
@@ -33,18 +38,34 @@ app.use(session({
     resave: true, 
     saveUninitialized: true
 }))
+
+///passport
+initializePassport()
+// JWT Github
+
+// app.use(session({
+//   secret:"SecretWorDs123"
+// }))
+
+///////
+app.use(passport.initialize())
+app.use(passport.session())
+
 ///services
 const prodServices = new daoProducts()
 const userServices = new userDao()
+
 //modificar el de arriba
 app.use(json())
 app.use(urlencoded({extended:true}))
 app.use(express.static(path.join(__dirname + '/public')))
+
 //apis cart y products
 app.use('/api/productos',routes)
 app.use('/api/cart',Cartroutes)
 app.use('/api/session',logsRoutes)
 app.use('/',usersRoutes)
+
 //motor de plantilla
 app.engine('hbs',handlebars.engine({
 extname : 'hbs'
