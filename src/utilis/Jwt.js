@@ -12,7 +12,7 @@ const authenticationToken = (req, res, next) => {
     const token = authHeader.split(' ')[1]
     jwt.verify(token, JwtPrivateKey, (err, userDecoded)=>{
         if(err) return res.status(401).json({status: 'error', error: 'not authorized'})
-        // console.log(userDecode)
+        console.log(userDecoded)
         req.user = userDecoded
         next()
     })

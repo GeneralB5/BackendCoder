@@ -2,98 +2,91 @@ import{ Router } from "express";
 import UsersDB from "../../daos/mongoDB/daoUsersdb.js";
 import passport from "passport";
 import { createToken } from "../../utilis/Jwt.js";
+import passportCall from "../../middleware/passportCall.js";
+import authentication from "../../middleware/auth.js";
+import { createPassword, validatePassword } from "../../utilis/hashPassword.js";
 const userServices = new UsersDB()
 const logsRoutes = Router()
-// ///login POST
-// logsRoutes.post('/login',async (req,res)=>{
-//     const {email,password } = req.body
-//     // simulando consulta a la base de datos
-//     if (email.trim() === '' || password.trim() === '') {
-//         return res.send('Faltan campos')
-//     }
-//     if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
-//         req.session.user = {
-//             email: email,
-//             rol: "admin"
-//         }
-//       return  res.redirect('/api/productos/gets')
-//     }
-
-
-//     const users = await userServices.searchUser(email)
-    
-//     if (users == null) {
-//         return res.send('email o contraseña equivocado')
-//     }
-
-//     // validar password
-//     if (password !== users.password) {
-//         return res.send('email o contraseña equivocado')
-//     }
-
-//     console.log(email)
-//     req.session.user = {
-//         email: email,
-//         rol: 'usuario'
-//     }
-//     res.redirect('/api/productos/gets')///para el login redirect a prod
-// })
-// //agregar
-// logsRoutes.post('/register',async (req,res)=>{
-
-// const {first_name,last_name,age,email,password} = req.body
-
-// if(first_name.trim()== "" ||  password.trim()== ""||email.trim()== ""){
-//  return res.status(401).send(`<h1>Faltan datos</h1>`)
-// }
-//  const Finded = await userServices.searchUser(email) 
-//  console.log(Finded)
-// if(Finded != null){
-//     console.log('anashe')
-//    return res.status(401).send(`<h1>Ya existe cuenta con este Email</h1>`)
-// }
-// const crearUser = await userServices.createUser(first_name,last_name,email,age,password)
-// res.status(200).send(`Usuario creado correctamente`)
-// })
 
 ///passport
 ///register
-logsRoutes.post("/register",passport.authenticate('register',{failureRedirect:'/api/session/failureRegister'}), (req, res)=>{ 
-    console.log(req.user)
-    const token =   createToken({_id:req.user._id})
-    res.json({status: 'success', payload: 'user created',token})
+logsRoutes.post("/register",async (req, res)=>{ 
+    try {
+            
+                const {email,password,first_name, last_name, age } = req.body
 
+                let Found = await userServices.searchUser(email)
+                if(Found) return res.send({status:"error",data:"Usuario ya existente"})
+        
+                const pass = createPassword(password)
+                const role = 'usuario'
+                const result = await userServices.createUser(first_name,last_name,email,age,pass,role)
+                
+                const token =   createToken({_id:result._id})
+                res.cookie('token', token,{
+                maxAge: 60 * 60 * 1000 * 24,
+                httpOnly: true})
+                res.json({status: 'success', payload: 'user created',token})
+    
+            } catch (error) {
+                return res.send('Error al crear un usuario: '+error)
+            }
 })
-logsRoutes.get('/failureRegister',(req, res)=>{
-    res.json({status: 'error', payload: 'Failure'})
-})
 
-///log-in
-logsRoutes.post("/login",passport.authenticate('login',{failureRedirect:'/api/session/failLogin'}), (req, res)=>{   
-    if(!req.user) return res.status(400).send({status: 'error', error: 'invalid credential'})
-
-
-    if(req.user.email.trim() === 'adminCoder@coder.com' && req.user.password.trim() === 'adminCod3r123'){
+// ///log-in
+logsRoutes.post("/login", async (req, res)=>{   
+   const  {email,password} = req.body
+    try {
+        if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
+            const token = createToken({_id:'1',role:"admin"})
+                res.cookie('token', token,{
+                maxAge: 60 * 60 * 1000 * 24,
+                httpOnly: true})
             req.session.user = {
-                email: req.user.email,
+                email: email,
                 rol: "admin"
             }
           return  res.redirect('/api/productos/gets')
-     }
-    const token =  createToken({_id:req.user._id,role:req.user._role})
-    req.session.user = {
-        email: req.user.email,
-        rol: 'usuario'
-    }
-    res.json({
-        token
-    })
-    res.redirect('/api/productos/gets')
+            }
 
+                const user = await userServices.searchUser(email)
+                if(!user){
+                    console.log('Usuario no encontrado')
+                    return res.send({
+                        status:"error",
+                        data:"no existe usuario"
+                    })
+                }
+                const userpass = user.password
+                console.log(password, userpass)
+                if(!validatePassword(password, userpass)){
+                    return res.send({
+                        status:"error",
+                        data:"no coinciden las contraseñas"
+                    })}
+                    console.log(user.role)
+                const token = createToken({_id:user._id,role:user.role})
+                res.cookie('token', token,{
+                maxAge: 60 * 60 * 1000 * 24,
+                httpOnly: true})
+                 req.session.user = {
+                     email: email,
+                     rol: user.role
+                 }
+                res.redirect('/api/productos/gets')
+            } catch (error) {
+                console.log(error)
+            }
+
+
+    
 })
-logsRoutes.get('/failLogin',(req, res)=>{
-    res.json({status: 'error', payload: 'Failure'})
-})
+//current
+logsRoutes.get('/current', [passportCall('jwt'),authentication(["PUBLIC","USUARIO","USUARIO_PREMIUN","ADMIN"])]
+, async (req,res)=>{
+    res.send("datos")
+ })
+
 ///logout
 logsRoutes.post('/logout',async (req,res)=>{
 req.session.destroy(err=>{
@@ -104,14 +97,15 @@ res.send("Se a deslogueado correctamente")
 ///GitHub
 // routes de passport
 
-//  logsRoutes.get('/github', passport.authenticate('github',{failureRedirect:'/api/session/failGithub'}, {scope:['user:email']}), async (req,res)=>{})
+ logsRoutes.get('/github', passport.authenticate('github',{failureRedirect:'/api/session/failGithub'}, {scope:['user:email']}), async (req,res)=>{})
 
-//  logsRoutes.get('/GitRegister', passport.authenticate('github', {failureRedirect: '/login'}),(req, res)=>{
-//      req.session.user = req.user
-//      res.redirect('/api/productos/gets')
+ logsRoutes.get('/GitRegister', passport.authenticate('github', {failureRedirect: '/login'}),(req, res)=>{
+     req.session.user = req.user
+     console.log(req.user)
+     res.redirect('/api/productos/gets')
 
-//  })
-//  logsRoutes.get('failGithub',(req, res)=>{
-//      res.json({status: 'error GitHub', payload: 'Failure on getting info'})
-//  })
+ })
+ logsRoutes.get('failGithub',(req, res)=>{
+     res.json({status: 'error GitHub', payload: 'Failure on getting info'})
+ })
 export default logsRoutes

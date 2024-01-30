@@ -1,12 +1,9 @@
-function authentication(req, res, next) {
-    // // pedir el user a la base de datos 
-    // if(req.session.email === 'adminCoder@coder.com' || !req.session.password === 'adminCod3r123') {
-    //     //return res.session.rol = "admin" 
-    //     //rol admin
-    // } 
-    // // return res.session.rol = "usuario" 
-    // //rol usuario
-    next()
-
-}
+const authentication = roleArray => {
+        return async (req, res, next) => {
+             console.log(req.user)
+            if(!req.user) return res.status(401).send({error: 'no autorizado'})
+            if(!roleArray.includes(req.user.role.toUpperCase())) return res.status(401).send({error: 'sin permisos'})
+            next()
+        }
+    }
 export default authentication

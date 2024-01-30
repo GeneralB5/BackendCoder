@@ -5,8 +5,11 @@ class UsersDB{
     }
     async createUser(fm,ln,email,age,pass,r){
         const userFinded = await usersModels.findOne({email})
-        if(fm.trim() !='' || email.trim() !=''||pass.trim() !='', userFinded == undefined){
-            const userCreate = await usersModels.create({first_name:fm,last_name:ln,email,age,password:pass,role:r})
+        const randomString = parseInt(Math.floor(Math.random()*65536),16)
+        const findedNumber = await usersModels.findOne({cartId:randomString})
+        
+        if(fm.trim() !='' || email.trim() !=''||pass.trim() !='', userFinded == undefined||findedNumber == undefined){
+            const userCreate = await usersModels.create({first_name:fm,last_name:ln,email,age,password:pass,role:r,cartId:randomString})
             return  userCreate
         }
     }

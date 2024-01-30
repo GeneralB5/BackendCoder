@@ -24,32 +24,31 @@ connectDb()
 
 
 //cookie y session
-app.use(cookieParser('p@l@br@seCret@'))
-app.use(session({
-  store: MongoStore.create({
-    mongoUrl:'mongodb+srv://ianmarco:ian240904@cluster0.tfejsks.mongodb.net/ecommerce?retryWrites=true&w=majority',
-    mongoOptions:{
-      useNewUrlParser:true,
-      useUnifiedTopology: true
-    },
-    ttl:1500000
-  }),
-    secret: 'secretCoder',
-    resave: true, 
-    saveUninitialized: true
-}))
+ app.use(cookieParser())
+// app.use(session({
+//   store: MongoStore.create({
+//     mongoUrl:'mongodb+srv://ianmarco:ian240904@cluster0.tfejsks.mongodb.net/ecommerce?retryWrites=true&w=majority',
+//     mongoOptions:{
+//       useNewUrlParser:true,
+//       useUnifiedTopology: true
+//     },
+//     ttl:1500000
+//   }),
+//     secret: 'secretCoder',
+//     resave: true, 
+//     saveUninitialized: true
+// }))
 
 ///passport
 initializePassport()
 // JWT Github
-
-// app.use(session({
-//   secret:"SecretWorDs123"
-// }))
+ app.use(session({
+   secret:"SescretWorDs123"
+ }))
 
 ///////
 app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.session())
 
 ///services
 const prodServices = new daoProducts()

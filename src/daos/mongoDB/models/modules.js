@@ -42,7 +42,8 @@ const usersSchema= new Schema({
     role:{
         type:String,
         require:true
-    }
+    },
+    cartId:String
 })
 const  prodsSchema = new Schema({
     title:{
