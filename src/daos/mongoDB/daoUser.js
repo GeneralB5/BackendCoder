@@ -6,22 +6,21 @@ class userDao{
     async readMessages(){
         try {
             const {messages} = await userModel.findOne({NameId:'messages'})
-            console.log(messages)
             return messages
         } catch (error) {
             console.log(error)
         }
     }
-   async addMessages(Email,message){
+    async createMessage(x){
         try {
-            const userArray = await userModel.find({NameId:'messages'})
-            console.log(userArray)
-            const FinalSend = {nick:Email,message:message}
-        if(userArray.length == 0){
-        return await userModel.create({NameId:"messages",messages:[FinalSend]})    
-    }else{
-        return await userModel.updateOne({NameId:"messages"},{$push:{messages:FinalSend}})
+            return await userModel.create({NameId:"messages",messages:[x]})  
+        } catch (error) {
+            console.log(error)
+        }
     }
+   async addMessages(x){
+        try {    
+        return await userModel.updateOne({NameId:"messages"},{$push:{messages:x}})
         } catch (error) {
             console.log(error)
         }

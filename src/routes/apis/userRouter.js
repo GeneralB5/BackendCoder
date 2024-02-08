@@ -1,13 +1,9 @@
 import{ Router } from "express";
+import userRouter from "../../controller/userController.js";
 const usersRoutes = Router()
+const control = new userRouter
 ///login
-usersRoutes.get('/login',async (req,res)=>{
-res.render("login")
-})
-
+usersRoutes.get('/login',control.getLogin)
 ///Register
-usersRoutes.get('/register',async (req,res)=>{
-    res.render("register")
-})
-
+usersRoutes.get('/register',control.getRegister)
 export default usersRoutes

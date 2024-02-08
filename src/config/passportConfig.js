@@ -1,14 +1,13 @@
 import passport from "passport";
-import local from "passport-local"
 import UsersDB from "../daos/mongoDB/daoUsersdb.js";
-import { createPassword,validatePassword } from "../utilis/hashPassword.js";
 import GithubStrategy from "passport-github2"
 import JWT from 'passport-jwt'
+import { configObject } from "./indexDb.js";
 
 const jwtStrategy = JWT.Strategy
 const ExtractJWT = JWT.ExtractJwt
 const userService   = new UsersDB()
-
+const {gh_client_secret,gh_client_id}=configObject
 const initializePassport = () => {
     // credenciales
     //GUARDAR
@@ -43,10 +42,9 @@ const initializePassport = () => {
         }
     }))
     //// login gitHub
-
     passport.use('github', new GithubStrategy({
-        clientID: 'Iv1.66422475381709fe',
-        clientSecret: '4c88fbb3d726864dcbaeb92853ed86291941cff6',
+        clientID: gh_client_id,
+        clientSecret: gh_client_secret,
         callbackURL: 'http://localhost:8080/api/session/GitRegister'
     }, async (accesToken, refreshToken, profile, done)=> {
         try {

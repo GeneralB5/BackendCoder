@@ -1,35 +1,9 @@
 import { Router } from "express";
-import daoProducts from "../daos/mongoDB/daoProducts.js";
-const prodServices = new daoProducts()
+import viewRouter from "../controller/viewController.js";
+const control = new viewRouter
 const viewRoutes = Router()
-
-viewRoutes.get('/',(req,res)=>{
-    res.render('index',{
-      name:"toma",
-      title:"arriba"
-    })
-  })
-
-  viewRoutes.get('/home', async (req,res)=>{
-    res.render('home',{
-      name:"toma",
-      Title:"E-commerce",
-      isAdmin: true,
-      products: await prodServices.seeAllProducts()
-    })
-  })
-
-  viewRoutes.get('/realtimeproducts', async (req,res)=>{
-    res.render('realTimeproducts',{
-      name:"toma",
-      Title:"E-commerce",
-      isAdmin: true,
-      products: await prodServices.seeAllProducts()
-    })
-  })
-  viewRoutes.get('/chatRealTime',async(req,res)=>{
-    res.render('chat',{
-      name:'chat'
-    })
-  })
+  viewRoutes.get('/',control.getView)
+  viewRoutes.get('/home',control.getAsync)
+  viewRoutes.get('/realtimeproducts',control.getRealTime)
+  viewRoutes.get('/chatRealTime',control.getChatRealTime)
 export default viewRoutes
