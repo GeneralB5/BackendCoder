@@ -1,10 +1,16 @@
 import daoCarts from "../daos/mongoDB/daoCarts.js";
+import servicesO from "../services/orderService.js";
+import servicesP from "../services/prodServ.js";
+import services from "../services/userServ.js";
 
 class cartControl{
     constructor(){
         this.cartServices = new daoCarts()
+        this.productServices = servicesP
+        this.orderServices = servicesO
+        this.userServices = services
     }
-//primer post manda a crear carrito
+ //primer post manda a crear carrito
 postCreate= async (req, res) => {
   try {
     const usedFunc = await this.cartServices.createCart()  
@@ -127,6 +133,56 @@ putCustomQuant = async (req, res) => {
     })   
   }
 }
+postPurchase= async(req,res)=>{
+try {
+const { Cid } = req.params;
+const {email} = await this.userServices.getBy({_id:req.user._id})
+const cart = await this.cartServices.seeCart(Cid)
+if(cart && email != undefined){
+ let ticketProd = 0
+cart.products.forEach( async peticion => {
+  const {id , quant} = peticion
+  const {stock , price} = await this.productServices.getBy({_id:id})
+  if(stock >= quant){
+    ticketProd += quant*price
+    const quantF = stock - quant
+    await this.cartServices.updateProd(id,quantF)
+    await this.cartServices.pullProd(Cid,id)
+  }
+  else{ console.log("producto excedido") }
+})
+let sig = 0
+let randomString 
+do {
+  randomString = (Math.random() + 2).toString(36).substring(7);
+  console.log(randomString)
+   sig = await this.orderServices.get({code:randomString})
+} while (sig);
+console.log(ticketProd)
+if(ticketProd != 0 && email.trim() != ''){
+await this.orderServices.post(ticketProd,email,randomString)
+}
 
+const {products} = await this.cartServices.seeCart(Cid)
+
+const returnedCart = []
+if(products.length > 0 ){
+  products.forEach(element => {
+  returnedCart.push(element.id)
+  });
+}
+res.send({status:"succesful",payload:returnedCart})
+}else{
+  res.send({status:"error", payload:"without information"})
+}
+
+;
+} catch (error) {
+  console.log(error)
+  res.send({
+    status:"Error"
+  })   
+}
+}
 }
 export default cartControl

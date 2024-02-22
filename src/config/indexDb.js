@@ -15,9 +15,10 @@ const configObject = {
      jwt_secret_key: process.env.JwtPrivateKey,
      gh_client_id:process.env.clientID,
      gh_client_secret:process.env.clientSecret,
-     ghSecret:process.env.secretGH
+     ghSecret:process.env.secretGH,
+     persistence:process.env.persistence
 }
-//'mongodb+srv://ianmarco:ian240904@cluster0.tfejsks.mongodb.net/ecommerce?retryWrites=true&w=majority'
+
 const connectDb = async () => {
     try {
         mongoSingleton.getInstance(configObject.mongo_url)

@@ -3,6 +3,7 @@ const nick = document.querySelector('#nickName')
 const msg = document.querySelector('#texto')
 let nickTosend = ''
 
+if(nick != null){
 nick.addEventListener('keyup',(e)=>{
     e.preventDefault()
     const name = document.querySelector("#name")
@@ -24,7 +25,7 @@ msg.addEventListener('keyup',(e)=>{
     }
 
 })
-
+}
 
 socket.on('chat',(data)=>{
     const p = document.querySelector('#PMessages')

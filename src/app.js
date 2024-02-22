@@ -11,21 +11,20 @@ import session from 'express-session';
 import passport from 'passport';
 import initializePassport from './config/passportConfig.js';
 import route from './routes/indexRouter.js';
+import cors from "cors"
 const app = express()
 //conectar a db
 connectDb()
  app.use(cookieParser())
-
 ///passport
 initializePassport()
 // JWT Github
  app.use(session({
    secret:configObject.ghSecret
  }))
-
-///////
+app.use(cors())
 app.use(passport.initialize())
-// app.use(passport.session())
+
 
 ///services
 const prodServices = new daoProducts()

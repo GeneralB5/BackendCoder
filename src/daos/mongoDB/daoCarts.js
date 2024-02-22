@@ -11,6 +11,7 @@ class daoCarts{
         return products
     } catch (error) {
         console.log(error)
+        throw Error
     }
 
     }
@@ -27,6 +28,7 @@ class daoCarts{
             return await prodsModel.findOne(all)            
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
     async getByCart(all){
@@ -34,6 +36,7 @@ class daoCarts{
             return await cartsModel.find(all)            
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
     async addCart(idCart,prod){   
@@ -48,6 +51,7 @@ class daoCarts{
          })           
         }catch (error) {
             console.log(error)            
+            throw Error
         }
     }
    async deletedCart(id){
@@ -55,6 +59,14 @@ class daoCarts{
         return await cartsModel.deleteOne({_id:id})    
         } catch (error) {
             console.log(error)
+            throw Error
+        }
+    }
+    async pullProd(idCart,Pid){
+        try {
+            return await cartsModel.updateOne({_id:idCart},{$pull:{products:{id:Pid}}},{multi:true})
+        } catch (error) {
+            throw Error
         }
     }
     ///deleteo productos si se queda sin quant lo borra
@@ -78,10 +90,12 @@ class daoCarts{
              multi:true
          })
              }}else{
-                new console.error("no se encontro producto");
+                
+                return "no se encontro producto"
              }
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
     async deleteAll(Cid){
@@ -89,6 +103,7 @@ class daoCarts{
             return await cartsModel.updateOne({_id:Cid},{products:[]})
         } catch (error) {
             console.log("no existe")
+            throw Error
         }
     }
     ///update del cart (solo funciona con todas las condiciones cumplidas)
@@ -98,6 +113,7 @@ class daoCarts{
             return await cartsModel.updateOne({_id:Cid},{$push:{products:prod}})    
             } catch (error) {
                 console.log(error)
+                throw Error
             }
     }
     async updateCart(Cid,prod){
@@ -105,6 +121,7 @@ class daoCarts{
             return await cartsModel.updateOne({_id:Cid},prod)    
             } catch (error) {
                 console.log(error)
+                throw Error
             }
     }
     /// update de quant
@@ -123,5 +140,11 @@ class daoCarts{
     }
         
     }
+   async updateProd (Pid,quant){
+            try {
+                return await prodsModel.updateOne({_id:Pid},{stock:quant})    
+            } catch (error) {
+                console.log(error)
+                new Error}}
 }
 export default daoCarts

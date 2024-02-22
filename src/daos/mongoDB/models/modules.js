@@ -1,9 +1,12 @@
 import {Schema,model} from 'mongoose'
 import mongoosePaginate from 'mongoose-paginate-v2'
+
 const productCollection = 'products'
 const cartCollection = 'carts'
 const userCollection = 'messages'
 const userCollections = 'users'
+const orderCollection = "orders"
+
 const cartsSchema = new Schema({
     products:{
         type:Array,
@@ -43,7 +46,8 @@ const usersSchema= new Schema({
         type:String,
         require:true
     },
-    cartId:String
+    cartId:String,
+    fullname:String
 })
 const  prodsSchema = new Schema({
     title:{
@@ -80,6 +84,21 @@ const  prodsSchema = new Schema({
         require:true
     }
 })
+const orderSchema = new Schema({
+    code:{
+        type:String,
+        require:true
+    },
+    purchase_datetime:{type:Date, default:Date.now},
+    amount:{
+        type:Number,
+        require:true
+    },
+    purchaser:{
+        type:String,
+        require:true
+    }
+})
 
 cartsSchema.pre('findOne',function () {
     this.populate('products.id')
@@ -88,5 +107,6 @@ prodsSchema.plugin(mongoosePaginate)
 const prodsModel = model(productCollection,prodsSchema)
 const cartsModel = model(cartCollection,cartsSchema)
 const userModel = model(userCollection,userSchema)
-const usersModels=model(userCollections,usersSchema)
-export  {prodsModel,cartsModel,userModel,usersModels}
+const usersModels = model(userCollections,usersSchema)
+const orderModel = model(orderCollection,orderSchema)
+export  {prodsModel,cartsModel,userModel,usersModels,orderModel}

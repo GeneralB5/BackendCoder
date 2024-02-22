@@ -1,9 +1,12 @@
-import UsersDB from "../daos/mongoDB/daoUsersdb.js";
+import services from "../services/userServ.js";
+import UserConstructor from "../dtos/userDto.js";
 import { createToken } from "../utilis/Jwt.js";
 import { createPassword, validatePassword } from "../utilis/hashPassword.js";
+import servicesC from "../services/cartServices.js";
 class logsRouter{
     constructor(){
-        this.userServices = new UsersDB()
+        this.userServices = services
+        this.cartServices = servicesC
     }
 ///passport
 ///register
@@ -12,21 +15,16 @@ postRegister = async (req, res)=>{
             
                 const {email,password,first_name, last_name, age } = req.body
 
-                let Found = await this.userServices.searchUserby({email})
+                let Found = await this.userServices.getBy({email})
                 if(Found) return res.send({status:"error",data:"Usuario ya existente"})
-                let randomnumber 
-                let findedNumber 
 
-                do {
-                    randomnumber = parseInt(Math.floor(Math.random()*65536),16)
-                    findedNumber = await this.userServices.searchUserby({cartId:randomnumber})
-                    console.log(findedNumber)
-                } while (findedNumber != null);
+                const cartId = await this.cartServices.post()
+
+                if(first_name.trim() !='' || email.trim() !=''||password.trim() !='',cartId == null) return res.send({status:"error",data:"Faltan datos"})
                 
-                if(first_name.trim() !='' || email.trim() !=''||password.trim() !='',findedNumber != null) return res.send({status:"error",data:"Faltan datos"})
                 const pass = createPassword(password)           
                 const role = 'usuario'
-                const result = await this.userServices.createUser(first_name,last_name,email,age,pass,role,randomnumber)
+                const result = await this.userServices.postReg(new UserConstructor({first_name,last_name,email,age,password:pass,cartId:cartId._id}),role)
                 
                 const token =   createToken({_id:result._id})
                 res.cookie('token', token,{
@@ -36,6 +34,7 @@ postRegister = async (req, res)=>{
     
             } catch (error) {
                 return res.send('Error al crear un usuario: '+error)
+                throw Error
             }
 }
 
@@ -54,8 +53,7 @@ postLogin = async (req, res)=>{
             }
           return  res.redirect('/api/productos/gets')
             }
-
-                const user = await this.userServices.searchUserby({email})
+                const user = await this.userServices.getBy({email})
                 if(!user){
                     console.log('Usuario no encontrado')
                     return res.send({
@@ -82,14 +80,20 @@ postLogin = async (req, res)=>{
                 res.redirect('/api/productos/gets')
             } catch (error) {
                 console.log(error)
+                throw Error
             }
-
-
-    
 }
 //current
 getCurrent = async (req,res)=>{
-    res.send("datos")
+    try {
+    console.log(req.user)
+    const data = await this.userServices.getBy({_id:req.user._id})
+    const user = new UserConstructor(data)
+    res.send({status:"succesful",payload:user})    
+    } catch (error) {
+        console.log("error de session")
+     res.send({status:"error",payload:"error de session"})
+    }
  }
 
 ///logout
@@ -100,7 +104,7 @@ postLogout =async (req,res)=>{
     res.send("Se a deslogueado correctamente")
     }
 
- getGithub = async (req,res)=>{}
+getGithub = async (req,res)=>{}
 
  getGitRegister = async (req, res)=>{
      req.session.user = req.user

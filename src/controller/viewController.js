@@ -30,7 +30,8 @@ getView = (req,res)=>{
   }
   getChatRealTime = async(req,res)=>{
     res.render('chat',{
-      name:'chat'
+      name:'chat',
+      role: req.user.role.toUpperCase() != "ADMIN"
     })
   }
 }

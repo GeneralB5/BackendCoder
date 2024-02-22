@@ -9,6 +9,7 @@ class userDao{
             return messages
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
     async createMessage(x){
@@ -16,6 +17,7 @@ class userDao{
             return await userModel.create({NameId:"messages",messages:[x]})  
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
    async addMessages(x){
@@ -23,6 +25,7 @@ class userDao{
         return await userModel.updateOne({NameId:"messages"},{$push:{messages:x}})
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
 }

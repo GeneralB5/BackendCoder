@@ -10,6 +10,7 @@ class daoProducts{
         return await prodsModel.find()
     } catch (error) {
      console.log(error)   
+     throw Error
     }
     }
     ///see only one
@@ -18,6 +19,7 @@ class daoProducts{
         return await prodsModel.findOne(all)        
     } catch (error) {
         console.log(error)
+        throw Error
     }
     }
     ////see with limitations
@@ -26,6 +28,7 @@ class daoProducts{
             return await prodsModel.paginate(query,{limit,sort:{price:sort},page,lean:true})        
         } catch (error) {
             console.log(error)
+            throw Error
         }
         }
     ////create
@@ -34,6 +37,7 @@ class daoProducts{
             return await prodsModel.create(prod)
         }catch (error) {
             console.log(error)
+            throw Error
         }
 
     }
@@ -42,6 +46,7 @@ try {
     return await prodsModel.updateOne({_id:id},prods)
 } catch (error) {
     console.log(error)
+    throw Error
 }
     }
    async deletedProd(id){
@@ -49,6 +54,7 @@ try {
         return await prodsModel.deleteOne({_id:id})    
         } catch (error) {
             console.log(error)
+            throw Error
         }
     }
 }

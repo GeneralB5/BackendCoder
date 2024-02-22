@@ -1,11 +1,17 @@
 <h1>CHAT</h1>
+ {{#if role}}
     <h2>Log-in</h2>
     <input type="text" name="" id="nickName">
     <p id="name"></p>
     <h2>message</h2>
-    
+    {{else}}
+    <h2>You are a admin you cannot write here!!</h2>
+{{/if}}
+
+{{#if role}}
     {{!-- submit --}}
         <input type="text" name="" id="texto">
+{{/if }}
     {{!-- //contenedor --}}
     <div  id="Contenedor-de-msg">
         <p class="chatSocketM" id="PMessages"></p>
