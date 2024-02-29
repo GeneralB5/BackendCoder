@@ -3,6 +3,9 @@ import UserConstructor from "../dtos/userDto.js";
 import { createToken } from "../utilis/Jwt.js";
 import { createPassword, validatePassword } from "../utilis/hashPassword.js";
 import servicesC from "../services/cartServices.js";
+import customError from "../services/error/customError.js";
+import { generateInfoError } from "../services/error/infoError.js";
+import ErrorNum from "../services/error/errorNum.js";
 class logsRouter{
     constructor(){
         this.userServices = services
@@ -10,7 +13,7 @@ class logsRouter{
     }
 ///passport
 ///register
-postRegister = async (req, res)=>{ 
+postRegister = async (req, res, next)=>{ 
     try {
             
                 const {email,password,first_name, last_name, age } = req.body
@@ -19,8 +22,15 @@ postRegister = async (req, res)=>{
                 if(Found) return res.send({status:"error",data:"Usuario ya existente"})
 
                 const cartId = await this.cartServices.post()
-
-                if(first_name.trim() !='' || email.trim() !=''||password.trim() !='',cartId == null) return res.send({status:"error",data:"Faltan datos"})
+                
+                if(!first_name||!email ||!password||!cartId){
+                  customError.createError({
+                    name:"User creation error",
+                    cause:generateInfoError({first_name , last_name, email}), 
+                    message:"Error trying to create user",
+                    code:ErrorNum.InvalidTypes
+                    })
+                }
                 
                 const pass = createPassword(password)           
                 const role = 'usuario'
@@ -32,9 +42,9 @@ postRegister = async (req, res)=>{
                 httpOnly: true})
                 res.json({status: 'success', payload: 'user created',token})
     
-            } catch (error) {
-                return res.send('Error al crear un usuario: '+error)
-                throw Error
+            } catch (err) {
+                // return res.send('Error al crear un usuario: '+error)
+                next(err)
             }
 }
 
@@ -73,7 +83,7 @@ postLogin = async (req, res)=>{
                 res.cookie('token', token,{
                 maxAge: 60 * 60 * 1000 * 24,
                 httpOnly: true})
-                 req.session.user = {
+                 req.user = {
                      email: email,
                      rol: user.role
                  }

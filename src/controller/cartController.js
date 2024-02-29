@@ -2,7 +2,7 @@ import daoCarts from "../daos/mongoDB/daoCarts.js";
 import servicesO from "../services/orderService.js";
 import servicesP from "../services/prodServ.js";
 import services from "../services/userServ.js";
-
+import {v4 as uuid } from "uuid"
 class cartControl{
     constructor(){
         this.cartServices = new daoCarts()
@@ -138,45 +138,34 @@ try {
 const { Cid } = req.params;
 const {email} = await this.userServices.getBy({_id:req.user._id})
 const cart = await this.cartServices.seeCart(Cid)
-if(cart && email != undefined){
- let ticketProd = 0
-cart.products.forEach( async peticion => {
-  const {id , quant} = peticion
-  const {stock , price} = await this.productServices.getBy({_id:id})
-  if(stock >= quant){
-    ticketProd += quant*price
-    const quantF = stock - quant
-    await this.cartServices.updateProd(id,quantF)
-    await this.cartServices.pullProd(Cid,id)
-  }
-  else{ console.log("producto excedido") }
-})
-let sig = 0
-let randomString 
-do {
-  randomString = (Math.random() + 2).toString(36).substring(7);
-  console.log(randomString)
-   sig = await this.orderServices.get({code:randomString})
-} while (sig);
-console.log(ticketProd)
-if(ticketProd != 0 && email.trim() != ''){
-await this.orderServices.post(ticketProd,email,randomString)
-}
 
-const {products} = await this.cartServices.seeCart(Cid)
-
-const returnedCart = []
-if(products.length > 0 ){
-  products.forEach(element => {
-  returnedCart.push(element.id)
-  });
-}
-res.send({status:"succesful",payload:returnedCart})
-}else{
+if(!cart || email == undefined){
   res.send({status:"error", payload:"without information"})
 }
+  const returnedCart = []  
+  let ticketProd = 0
+   cart.products.forEach(async ({id , quant}) => {
+    const {stock , price} = await this.productServices.getBy({_id:id})
+    if(stock >= quant){
+      ticketProd += quant*price
+      const quantF = stock - quant
+      await this.cartServices.updateProd(id,quantF)
+      await this.cartServices.pullProd(Cid,id)
+    }
+    else{ 
+      returnedCart.push({id})
+      console.log("producto excedido") 
+    }
+    })
+  let randomString = uuid()
+  console.log(ticketProd)
+  if(ticketProd != 0){
+  await this.orderServices.post(ticketProd,email,randomString)
+  }
 
-;
+  
+  res.send({status:"succesful" , payload:returnedCart})
+
 } catch (error) {
   console.log(error)
   res.send({

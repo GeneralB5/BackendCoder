@@ -7,11 +7,11 @@ import daoProducts from './daos/mongoDB/daoProducts.js';
 import {connectDb,configObject} from './config/indexDb.js';
 import userDao from './daos/mongoDB/daoUser.js';
 import cookieParser from 'cookie-parser'
-import session from 'express-session';
 import passport from 'passport';
 import initializePassport from './config/passportConfig.js';
 import route from './routes/indexRouter.js';
 import cors from "cors"
+import handleErrors from './middleware/error/handleError.js';
 const app = express()
 //conectar a db
 connectDb()
@@ -19,10 +19,6 @@ connectDb()
 ///passport
 initializePassport()
 // JWT Github
- app.use(session({
-   secret:configObject.ghSecret
- }))
-app.use(cors())
 app.use(passport.initialize())
 
 
@@ -33,6 +29,7 @@ const userServices = new userDao()
 //modificar el de arriba
 app.use(json())
 app.use(urlencoded({extended:true}))
+app.use(cors())
 app.use(express.static(path.join(__dirname + '/public')))
 
 //motor de plantilla
@@ -41,7 +38,6 @@ extname : 'hbs'
 }))//definimos engine
 app.set('view engine','hbs')// definimos que engine usar
 app.set('views', __dirname + '/views')//definimos a donde ir a buscar el handlebars
-const port = configObject.PORT
 // app.use("/views",viewRoutes)
 app.use(( err, req, res, next)=>{
   console.error(err.stack)
@@ -49,15 +45,16 @@ app.use(( err, req, res, next)=>{
 })
 //rutas
 app.use(route)
+app.use(handleErrors)
 
-const httpsServer = app.listen(port,(err) =>{
+const httpsServer = app.listen(configObject.PORT,(err) =>{
   if (err)  console.log(err)
-  console.log(`Escuchando en el puerto ${port}`)
+  console.log(`Escuchando en el puerto ${configObject.PORT}`)
 })
 
 
 const io = new Server(httpsServer)
-//////////// IO server
+// IO server
 io.on('connect', async (socket)=>{
   //recibir productos
   socket.on('agregar', async (data)=>{

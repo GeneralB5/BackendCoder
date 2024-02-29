@@ -1,5 +1,6 @@
 import daoProducts from "../daos/mongoDB/daoProducts.js";
 import UsersDB from "../daos/mongoDB/daoUsersdb.js";
+import generateProd from "../mocking/prodMock.js";
 
 class productControl{
     constructor(){
@@ -7,24 +8,33 @@ class productControl{
         this.userServices = new UsersDB()
 
     }
+get = async(req,res)=>{
+  try {
+    const prod = await this.prodsServices.seeAllProducts()
+    res.send({status:"succes", payload:prod})
+  } catch (error) {
+    console.log(error)
+  }
+}
 gets = async (req, res) => {
   const {limit,numPage,sort,query} = req.query
   let fn = undefined
   let ln = undefined
-console.log(req.session.user)
-  if(req.session.user){
-  const email = req.session.user.email
-  if(email != "adminCoder@coder.com"){
- const {first_name,last_name} = await this.userServices.searchUserby({email})
+  console.log("hola")
+console.log(req.user)
+  if(req.user){
+  const role = req.user.role
+  if(role != "admin"){
+ const {first_name,last_name} = await this.userServices.searchUserby({_id:req.user._id})
  fn = first_name
  ln = last_name
 }else{
- fn = email
+  const {first_name} = await this.userServices.searchUserby({_id:_id})
+ fn = first_name
  ln = 'admin'
  
 }
 }
-
 let querys 
 if(isNaN(query) && query != undefined){
   querys = {title: {$in:query}}
@@ -126,6 +136,11 @@ getIdProd = async (req, res) => {
       payload: prodId
     }) 
 }
-
+Post100Prod = async (req,res)=>{
+  const prodArray = []
+  for( let i = 0 ; i < 100 ; i++ ){
+    prodArray.push(generateProd())
+  }
+}
 }
 export default productControl

@@ -1,26 +1,16 @@
 import{ Router } from "express";
 import cartControl from "../../controller/cartController.js";
 import passportCall from "../../middleware/passportCall.js";
-
+import authentication from "../../middleware/auth.js";
 const control = new cartControl
 const Cartroutes = Router()
-//primer post manda a crear carrito
-Cartroutes.post('/',control.postCreate)
-//segundo post manda el producto seleccionado y si se manda mas de una vez se suma el quantity
-Cartroutes.post('/:Cid/productos/:Pid',control.postAdd)
-// el get te obtiene los productos con el quantity
-Cartroutes.get('/:Cid',control.getCart)
-//deleted de productos
-Cartroutes.delete("/:Cid/products/:Pid",control.deleteProd)
-/// vaciar cart completo
-Cartroutes.delete("/:Cid",control.deleteCart)
-///actualizar cart entero
-///se pasa cart por body [{Prod},{Prod}....]
-Cartroutes.put("/:Cid",control.putCustomCart)
-/// actualizar quantity del determinado producto
-//// quantity se pasa por body de tal manera
-/// quant: numero
+Cartroutes.post('/',[passportCall('jwt'),authentication(["USUARIO"])],control.postCreate)
+Cartroutes.post('/:Cid/productos/:Pid',[passportCall('jwt'),authentication(["USUARIO"])],control.postAdd)
+Cartroutes.get('/:Cid',[passportCall('jwt'),authentication(["USUARIO"])],control.getCart)
+Cartroutes.delete("/:Cid/products/:Pid",[passportCall('jwt'),authentication(["USUARIO"])],control.deleteProd)
+Cartroutes.delete("/:Cid",[passportCall('jwt'),authentication(["USUARIO"])],control.deleteCart)
+Cartroutes.put("/:Cid",[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomCart)
 Cartroutes.post('/:Cid/purchase' , passportCall('jwt'), control.postPurchase)
-Cartroutes.put('/:Cid/products/:Pid',control.putCustomQuant)
+Cartroutes.put('/:Cid/products/:Pid',[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomQuant)
 
 export default Cartroutes
