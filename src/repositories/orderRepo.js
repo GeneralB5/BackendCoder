@@ -2,7 +2,7 @@ class orderRepo{
 constructor(dao){
     this.service = dao
 }
-post =(prod,purc,code)=> this.service.createOrder(prod,purc,code)
-get =(filter)=> this.service.findBy(filter)
+createOrder =(prod,purc,code)=> this.service.postOrder(prod,purc,code)
+findBy =(filter)=> this.service.getBy(filter)
 }
 export default orderRepo

@@ -48,10 +48,10 @@ const initializePassport = () => {
         callbackURL: 'http://localhost:8080/api/session/GitRegister'
     }, async (accesToken, refreshToken, profile, done)=> {
         try {
-            console.log(profile)
+            
             let user = await userService.searchUserby({email: profile._json.email})
             if (!user) {
-                // para registrar en caso de que no exista
+                
                 const userCreated = await userService.createUser(
                      profile.username,
                      profile.username,

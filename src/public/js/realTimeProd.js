@@ -1,3 +1,4 @@
+import { logger } from "../../utilis/logger.js"
 const socket = io()
 const div = document.querySelector('#DivContainer')
 const deleteButtom = document.querySelector('#deleteProd')
@@ -17,7 +18,7 @@ form.addEventListener('submit',(e)=>{
     status =  status.toLowerCase() 
      const data= {title, description, price, thumbnail, code, stock,category,status}
     
-    console.log(JSON.stringify(status))
+    
     if(title != '' && 
     price != null&&
     description !=''&&
@@ -29,7 +30,7 @@ form.addEventListener('submit',(e)=>{
     thumbnail !=""){
      socket.emit('agregar',data)  
     }else{
-        console.log("Falta informacion")
+        logger.warning("Falta informacion")
     }
     form.reset()
 })

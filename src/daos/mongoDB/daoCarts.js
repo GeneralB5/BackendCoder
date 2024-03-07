@@ -4,22 +4,12 @@ class daoCarts{
     constructor(){
 
     }
-   async seeCart(id){
-    try {
-      //poner el pre del github del profe en elmodel :)
-        const products = await cartsModel.findOne({_id:id})        
-        return products
-    } catch (error) {
-        console.log(error)
-        throw Error
-    }
-
-    }
-    async createCart(){  
+   
+    async postCart(){  
         try {
             return await cartsModel.create({products:[]})
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
         }
 
     }
@@ -27,7 +17,7 @@ class daoCarts{
         try {
             return await prodsModel.findOne(all)            
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
@@ -35,11 +25,11 @@ class daoCarts{
         try {
             return await cartsModel.find(all)            
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
-    async addCart(idCart,prod){   
+    async postToCart(idCart,prod){   
         try {
         await cartsModel.updateOne(
                  {_id:idCart}
@@ -50,7 +40,7 @@ class daoCarts{
              multi:true
          })           
         }catch (error) {
-            console.log(error)            
+            req.logger.error(error)            
             throw Error
         }
     }
@@ -58,7 +48,7 @@ class daoCarts{
         try {
         return await cartsModel.deleteOne({_id:id})    
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
@@ -94,7 +84,7 @@ class daoCarts{
                 return "no se encontro producto"
              }
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
@@ -102,30 +92,30 @@ class daoCarts{
         try {
             return await cartsModel.updateOne({_id:Cid},{products:[]})
         } catch (error) {
-            console.log("no existe")
+            req.logger.error("no existe")
             throw Error
         }
     }
     ///update del cart (solo funciona con todas las condiciones cumplidas)
     async addToCart(Cid,prod){
         try {
-            console.log(prod)
+            req.logger.error(prod)
             return await cartsModel.updateOne({_id:Cid},{$push:{products:prod}})    
             } catch (error) {
-                console.log(error)
+                req.logger.error(error)
                 throw Error
             }
     }
-    async updateCart(Cid,prod){
+    async putCart(Cid,prod){
             try {
             return await cartsModel.updateOne({_id:Cid},prod)    
             } catch (error) {
-                console.log(error)
+                req.logger.error(error)
                 throw Error
             }
     }
     /// update de quant
-    async updateQuant(Cid,Pid,quant){
+    async putQuant(Cid,Pid,quant){
     if(!isNaN(quant)){
         return await cartsModel.updateOne( 
         {_id:Cid},
@@ -140,11 +130,11 @@ class daoCarts{
     }
         
     }
-   async updateProd (Pid,quant){
-            try {
+   async putProd (Pid,quant){
+    try {
                 return await prodsModel.updateOne({_id:Pid},{stock:quant})    
-            } catch (error) {
-                console.log(error)
-                new Error}}
+    } catch (error) {
+        throw Error(error)
+    }}
 }
 export default daoCarts

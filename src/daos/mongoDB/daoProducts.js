@@ -9,7 +9,7 @@ class daoProducts{
     try {
         return await prodsModel.find()
     } catch (error) {
-     console.log(error)   
+     req.logger.error(error)   
      throw Error
     }
     }
@@ -18,7 +18,7 @@ class daoProducts{
     try {
         return await prodsModel.findOne(all)        
     } catch (error) {
-        console.log(error)
+        req.logger.error(error)
         throw Error
     }
     }
@@ -27,7 +27,7 @@ class daoProducts{
         try {
             return await prodsModel.paginate(query,{limit,sort:{price:sort},page,lean:true})        
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
         }
@@ -36,7 +36,7 @@ class daoProducts{
         try {
             return await prodsModel.create(prod)
         }catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
 
@@ -45,7 +45,7 @@ class daoProducts{
 try {
     return await prodsModel.updateOne({_id:id},prods)
 } catch (error) {
-    console.log(error)
+    req.logger.error(error)
     throw Error
 }
     }
@@ -53,7 +53,7 @@ try {
         try {
         return await prodsModel.deleteOne({_id:id})    
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }

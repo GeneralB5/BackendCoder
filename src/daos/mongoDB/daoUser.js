@@ -8,7 +8,7 @@ class userDao{
             const {messages} = await userModel.findOne({NameId:'messages'})
             return messages
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
@@ -16,7 +16,7 @@ class userDao{
         try {
             return await userModel.create({NameId:"messages",messages:[x]})  
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }
@@ -24,7 +24,7 @@ class userDao{
         try {    
         return await userModel.updateOne({NameId:"messages"},{$push:{messages:x}})
         } catch (error) {
-            console.log(error)
+            req.logger.error(error)
             throw Error
         }
     }

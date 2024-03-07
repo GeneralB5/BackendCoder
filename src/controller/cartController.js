@@ -1,11 +1,11 @@
-import daoCarts from "../daos/mongoDB/daoCarts.js";
+import servicesC from "../services/cartServices.js";
 import servicesO from "../services/orderService.js";
 import servicesP from "../services/prodServ.js";
 import services from "../services/userServ.js";
 import {v4 as uuid } from "uuid"
 class cartControl{
     constructor(){
-        this.cartServices = new daoCarts()
+        this.cartServices = servicesC
         this.productServices = servicesP
         this.orderServices = servicesO
         this.userServices = services
@@ -13,7 +13,7 @@ class cartControl{
  //primer post manda a crear carrito
 postCreate= async (req, res) => {
   try {
-    const usedFunc = await this.cartServices.createCart()  
+    const usedFunc = await this.cartServices.createCart()
     res.json(usedFunc);
   } catch (error) {
     res.send({
@@ -27,14 +27,14 @@ postAdd = async (req, res) => {
     const idCartparams = req.params.Cid;
     const idProdsParams = req.params.Pid;
     // const usedFunc = await addCart(idCartparams,idProdsParams)
-    const existProd = await this.cartServices.getByProds({_id:idProdsParams})
-    const existCart = await this.cartServices.getByCart({$and:[{_id:idCartparams},{"products.id":idProdsParams}]})
+    const existProd = await this.cartServices.getByPro({_id:idProdsParams})
+    const existCart = await this.cartServices.getByCa({$and:[{_id:idCartparams},{"products.id":idProdsParams}]})
     if(existProd != []){
       if(existCart.length == 0){
-        await this.cartServices.addToCart(idCartparams,{id:idProdsParams, quant:1})
+        await this.cartServices.addProduct(idCartparams,{id:idProdsParams, quant:1})
         return res.json({status:"success",payload:"Added"});  
       }else{
-        const usedFunc = await this.cartServices.addCart(idCartparams,idProdsParams)
+        const usedFunc = await this.cartServices.postIncP(idCartparams,idProdsParams)
         res.json({status:"success",payload:usedFunc});  
       }
     }else{
@@ -50,10 +50,7 @@ postAdd = async (req, res) => {
 // el get te obtiene los productos con el quantity
 getCart = async (req, res) => {
   try {
-    const idParams = req.params.Cid;
-    // const usedFunc = await seeCart(idParams)
-    const usedFunc = await this.cartServices.seeCart(idParams)
-    res.json(usedFunc) ;
+    if( req.params.Cid ) return await this.cartServices.getByCa({_id:req.params.Cid})
   } catch (error) {
     res.send({
       status:"Error"
@@ -61,11 +58,11 @@ getCart = async (req, res) => {
   }
     
 }
-//deleted de productos
+
 deleteProd = async(req,res)=>{
   try {
     const {Cid,Pid} = req.params
-    const Products = await this.cartServices.deleteProd(Cid,Pid)
+    const Products = await this.cartServices.deleteP(Cid,Pid)
     res.send({
       status:"success",
       payload:Products
@@ -77,7 +74,7 @@ deleteProd = async(req,res)=>{
   }
   
 }
-/// vaciar cart completo
+
 deleteCart = async(req,res)=>{
   try {
     const {Cid} = req.params
@@ -93,14 +90,13 @@ deleteCart = async(req,res)=>{
   }
   
 }
-///actualizar cart entero
-///se pasa cart por body [{Prod},{Prod}....]
+
 putCustomCart = async(req,res)=>{
   try {
-    const body = req.body
+    const body =  req.body
     const {Cid} = req.params
     if(body.quant > 0){
-    const newCart = await this.cartServices.updateCart(Cid,{products:body})
+    const newCart = await this.cartServices.updateC(Cid,{products:body})
     return newCart
   }else{
     res.send("quant error")
@@ -115,14 +111,15 @@ putCustomCart = async(req,res)=>{
     })  
   } 
 }
-/// actualizar quantity del determinado producto
-//// quantity se pasa por body de tal manera
-/// quant: numero
+
 putCustomQuant = async (req, res) => {
   try {
     const {Cid,Pid} = req.params;
     const {quant} = req.body
-    const usedFunc = await this.cartServices.updateQuant(Cid,Pid,quant)
+    let usedFunc
+    if(quant != 0){
+      usedFunc = await this.cartServices.updateQua(Cid,Pid,quant)
+    }
       res.json({
         status:"success",
         payload:usedFunc
@@ -135,39 +132,31 @@ putCustomQuant = async (req, res) => {
 }
 postPurchase= async(req,res)=>{
 try {
+req.logger.info(req.user.email)
 const { Cid } = req.params;
-const {email} = await this.userServices.getBy({_id:req.user._id})
-const cart = await this.cartServices.seeCart(Cid)
+const cart = await this.cartServices.getByCa({_id:Cid})
+if(!cart || req.user.email == undefined) res.send({status:"error", payload:"without information"})
 
-if(!cart || email == undefined){
-  res.send({status:"error", payload:"without information"})
-}
-  const returnedCart = []  
   let ticketProd = 0
-   cart.products.forEach(async ({id , quant}) => {
+    const updateCart = cart.products.map(async ({id , quant}) => {
     const {stock , price} = await this.productServices.getBy({_id:id})
     if(stock >= quant){
       ticketProd += quant*price
       const quantF = stock - quant
-      await this.cartServices.updateProd(id,quantF)
-      await this.cartServices.pullProd(Cid,id)
-    }
-    else{ 
-      returnedCart.push({id})
-      console.log("producto excedido") 
+      await this.cartServices.updateP(id,quantF)
+      await this.cartServices.deletePpull(Cid,id)
     }
     })
-  let randomString = uuid()
-  console.log(ticketProd)
+
+  await Promise.all(updateCart)
+  const {products} = await this.cartServices.getByCa({_id:Cid})
   if(ticketProd != 0){
-  await this.orderServices.post(ticketProd,email,randomString)
+  let randomString = uuid()
+  await this.orderServices.createOrder(ticketProd,req.user.email,randomString)
   }
-
-  
-  res.send({status:"succesful" , payload:returnedCart})
-
+  res.send({status:"succesful" , payload:products})
 } catch (error) {
-  console.log(error)
+  req.logger.error(error)
   res.send({
     status:"Error"
   })   

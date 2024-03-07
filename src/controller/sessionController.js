@@ -4,7 +4,7 @@ import { createToken } from "../utilis/Jwt.js";
 import { createPassword, validatePassword } from "../utilis/hashPassword.js";
 import servicesC from "../services/cartServices.js";
 import customError from "../services/error/customError.js";
-import { generateInfoError } from "../services/error/infoError.js";
+import { generateInfoError, generateInfoErrorLogin } from "../services/error/infoError.js";
 import ErrorNum from "../services/error/errorNum.js";
 class logsRouter{
     constructor(){
@@ -18,7 +18,7 @@ postRegister = async (req, res, next)=>{
             
                 const {email,password,first_name, last_name, age } = req.body
 
-                let Found = await this.userServices.getBy({email})
+                let Found = await this.userServices.searchUserby({email})
                 if(Found) return res.send({status:"error",data:"Usuario ya existente"})
 
                 const cartId = await this.cartServices.post()
@@ -34,7 +34,7 @@ postRegister = async (req, res, next)=>{
                 
                 const pass = createPassword(password)           
                 const role = 'usuario'
-                const result = await this.userServices.postReg(new UserConstructor({first_name,last_name,email,age,password:pass,cartId:cartId._id}),role)
+                const result = await this.userServices.createUser(new UserConstructor({first_name,last_name,email,age,password:pass,cartId:cartId._id}),role)
                 
                 const token =   createToken({_id:result._id})
                 res.cookie('token', token,{
@@ -50,8 +50,8 @@ postRegister = async (req, res, next)=>{
 
 // ///log-in
 postLogin = async (req, res)=>{   
-   const  {email,password} = req.body
     try {
+        const  {email,password} = req.body
         if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
             const token = createToken({_id:'1',role:"admin"})
                 res.cookie('token', token,{
@@ -63,22 +63,30 @@ postLogin = async (req, res)=>{
             }
           return  res.redirect('/api/productos/gets')
             }
-                const user = await this.userServices.getBy({email})
+            if(!email ||!password){
+                customError.createError({
+                    name:"User creation error",
+                    cause:generateInfoErrorLogin({email,password}), 
+                    message:"Error trying to create user",
+                    code:ErrorNum.InvalidTypes
+                    })
+            }
+                const user = await this.userServices.searchUserby({email})
                 if(!user){
-                    console.log('Usuario no encontrado')
+                    req.logger.warning('Usuario no encontrado')
                     return res.send({
                         status:"error",
                         data:"no existe usuario"
                     })
                 }
                 const userpass = user.password
-                console.log(password, userpass)
+               
                 if(!validatePassword(password, userpass)){
                     return res.send({
                         status:"error",
                         data:"no coinciden las contraseñas"
                     })}
-                    console.log(user.role)
+                    
                 const token = createToken({_id:user._id,role:user.role})
                 res.cookie('token', token,{
                 maxAge: 60 * 60 * 1000 * 24,
@@ -89,41 +97,41 @@ postLogin = async (req, res)=>{
                  }
                 res.redirect('/api/productos/gets')
             } catch (error) {
-                console.log(error)
+                req.logger.error(error)
                 throw Error
             }
 }
 //current
 getCurrent = async (req,res)=>{
     try {
-    console.log(req.user)
+    
     const data = await this.userServices.getBy({_id:req.user._id})
     const user = new UserConstructor(data)
     res.send({status:"succesful",payload:user})    
     } catch (error) {
-        console.log("error de session")
+        
      res.send({status:"error",payload:"error de session"})
     }
  }
 
 ///logout
 postLogout =async (req,res)=>{
-    req.session.destroy(err=>{
-        if (err) return res.send({status: 'error', error: err})
-    })
+    res.clearCookie('token')
     res.send("Se a deslogueado correctamente")
     }
 
 getGithub = async (req,res)=>{}
 
- getGitRegister = async (req, res)=>{
-     req.session.user = req.user
-     console.log(req.user)
+getGitRegister = async (req, res)=>{
+    req.logger.debug(req.user)
+
+     
      res.redirect('/api/productos/gets')
 
  }
 
  getFail = async (req, res)=>{
+    
      res.json({status: 'error GitHub', payload: 'Failure on getting info'})
  }
 

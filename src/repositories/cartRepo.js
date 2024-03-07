@@ -2,16 +2,16 @@ class cartRepo{
     constructor(dao){
         this.Service = dao
     }
-    post= () => this.Service.createCart()
-    getBy = (filter)=> this.Service.getByCart(filter)
+    createCart= () => this.Service.postCart()
+    getByCa = (filter)=> this.Service.getByCart(filter)
     getByPro = (filter)=> this.Service.getByProds(filter)
-    postAdd = (Cid,prod)=>this.Service.addToCart(Cid,prod)
+    addProduct = (Cid,prod)=>this.Service.postToCart(Cid,prod)
     postIncP = (Cid,idProd)=>this.Service.addCart(Cid,idProd)
-    putP = (Pid,quant)=>this.Service.updateProd(Pid,quant)
-    putC = (Cid,Prod)=>this.Service.updateCart(Cid,prod)
-    putQua = (Cid,Pid,quant)=>this.Service.updateQuant(Cid,Pid,quant)
+    updateP = (Pid,quant)=>this.Service.putProd(Pid,quant)
+    updateC = (Cid,Prod)=>this.Service.putCart(Cid,Prod)
+    updateQua = (Cid,Pid,quant)=>this.Service.putQuant(Cid,Pid,quant)
     deleteP = (Cid,Pid)=>this.Service.deleteProd(Cid,Pid)
-    deleteALl = (Cid)=>this.Service.deleteAll(Cid)
+    deleteAll = (Cid)=>this.Service.deleteAll(Cid)
     deleteCart = (Cid)=>this.Service.deletedCart(Cid)
     deletePpull = (Cid,Pid)=>this.Service.pullProd(Cid,Pid)
 }

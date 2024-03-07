@@ -1,27 +1,27 @@
-import daoProducts from "../daos/mongoDB/daoProducts.js";
-import UsersDB from "../daos/mongoDB/daoUsersdb.js";
+import services from "../services/userServ.js";
 import generateProd from "../mocking/prodMock.js";
-
+import servicesP from "../services/prodServ.js";
 class productControl{
     constructor(){
-        this.prodsServices = new daoProducts()
-        this.userServices = new UsersDB()
-
+        this.prodsServices = servicesP
+        this.userServices = services
+           
     }
-get = async(req,res)=>{
+GET = async(req,res)=>{
   try {
-    const prod = await this.prodsServices.seeAllProducts()
+    const prod = await this.prodsServices.getProducts()
     res.send({status:"succes", payload:prod})
   } catch (error) {
-    console.log(error)
+    res.send({status:"Error", payload:"Request error"})
   }
 }
-gets = async (req, res) => {
-  const {limit,numPage,sort,query} = req.query
+GETQUERY = async (req, res) => {
+  try {
+    const {limit,numPage,sort,query} = req.query
   let fn = undefined
   let ln = undefined
-  console.log("hola")
-console.log(req.user)
+  
+  
   if(req.user){
   const role = req.user.role
   if(role != "admin"){
@@ -50,7 +50,7 @@ if(!isNaN(query)&& query != undefined){
         prevPage,
         nextPage,
         page
-  } = await this.prodsServices.seeProductsLimit(limit,sort,numPage,querys)
+  } = await this.prodsServices.getLim(limit,sort,numPage,querys)
   res.render('getSeeProd',{
     name:"comercio",
     Title:"E-commerce",
@@ -64,79 +64,81 @@ if(!isNaN(query)&& query != undefined){
         nextPage,
         page,
         limit
-  })
+  })  
+  } catch (error) {
+    req.logger.error(error)
+  }
+  
 }
 
-deleteProd = async (req, res) => {
+DELETEDPROD = async (req, res) => {
   try {
     const id = req.params.id
   if(id == undefined){
     res.send({status:"Error" , payload: "Falta id"})
   }
-  const Prods = await this.prodsServices.deletedProd(id)
+  const Prods = await this.prodsServices.delete(id)
   res.json({
     status: "success",
     payload: Prods
   })
   } catch (error) {
-    console.log(error)
     res.send({status:"Error" , payload: "Sistem error"})
   }
 }
 
-putProd = async (req, res) => {
+PUTPROD = async (req, res) => {
 try {
   const prodsParams = req.body;
   const id = req.params.id
   if(prodsParams.code == undefined || prodsParams.title == undefined || prodsParams.price == undefined || prodsParams.stock == undefined || id == undefined ){
     return res.send({status:"Error" , payload:"Faltan parametros"})
   }
-const updatedProd = await this.prodsServices.uploadProd(id,prodsParams)
+const updatedProd = await this.prodsServices.put(id,prodsParams)
 res.json({
   status: "success",
   payload: updatedProd
 })
 } catch (error) {
-  console.log(error)
   res.send({status:"Error" , payload: "Sistem error"})
 }
   
 }
 
-postProd = async (req, res) => {
+POSTPROD = async (req, res) => {
   try {
     const prodsParams = req.body
     const code = prodsParams.code
-    const signal = await this.prodsServices.seeAll({code:code})
-    console.log(signal)
+    const signal = await this.prodsServices.getBy({code:code})
+    
   if(signal != null){
     return res.send({status:"error",payload:"Producto ya existente"})
   }
   if(prodsParams.code == undefined || prodsParams.title == undefined || prodsParams.price == undefined || prodsParams.stock == undefined ){
     return res.send({status:"Error" , payload:"Faltan parametros"})
   }
- const prods = await this.prodsServices.createProds(prodsParams)
+ const prods = await this.prodsServices.post(prodsParams)
    return res.json({
      status: "success",
      payload: prods
    })
     
   } catch (error) {
-    console.log(error)  
+    
     res.send({ status:"Error" , payload: "Sistem error"})
   }
    
 }
 
-getIdProd = async (req, res) => {
+GETIDPROD = async (req, res) => {
     const idParams = req.params.id
-    const prodId = await this.prodsServices.seeAll(idParams)
+    const prodId = await this.prodsServices.getBy({_id:idParams})
     res.json({
       status: "success",
       payload: prodId
     }) 
 }
-Post100Prod = async (req,res)=>{
+POST100PROD = async (req,res)=>{
   const prodArray = []
   for( let i = 0 ; i < 100 ; i++ ){
     prodArray.push(generateProd())
