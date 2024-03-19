@@ -11,6 +11,6 @@ Cartroutes.delete("/:Cid/products/:Pid",[passportCall('jwt'),authentication(["US
 Cartroutes.delete("/:Cid",[passportCall('jwt'),authentication(["USUARIO"])],control.deleteCart)
 Cartroutes.put("/:Cid",[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomCart)
 Cartroutes.post('/:Cid/purchase' , passportCall('jwt'), control.postPurchase)
-Cartroutes.put('/:Cid/products/:Pid',[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomQuant)
+Cartroutes.put('/products/:Pid',[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomQuant)
 
 export default Cartroutes

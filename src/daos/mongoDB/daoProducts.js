@@ -4,16 +4,16 @@ class daoProducts{
     constructor(){
 
     }
-    //see all
+    
    async seeAllProducts(){
     try {
-        return await prodsModel.find()
+        return await prodsModel.find({})
     } catch (error) {
      req.logger.error(error)   
      throw Error
     }
     }
-    ///see only one
+    
    async seeAll(all){
     try {
         return await prodsModel.findOne(all)        
@@ -22,7 +22,7 @@ class daoProducts{
         throw Error
     }
     }
-    ////see with limitations
+    
     async seeProductsLimit(limit=10,sort='asc',page=1,query={}){
         try {
             return await prodsModel.paginate(query,{limit,sort:{price:sort},page,lean:true})        
@@ -31,7 +31,7 @@ class daoProducts{
             throw Error
         }
         }
-    ////create
+    
     async createProds(prod){  
         try {
             return await prodsModel.create(prod)

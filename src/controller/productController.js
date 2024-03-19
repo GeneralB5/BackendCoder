@@ -73,17 +73,20 @@ if(!isNaN(query)&& query != undefined){
 
 DELETEDPROD = async (req, res) => {
   try {
+    const {role , email} = req.user
     const id = req.params.id
   if(id == undefined){
     res.send({status:"Error" , payload: "Falta id"})
   }
-  const Prods = await this.prodsServices.delete(id)
+  const prod = await this.prodsServices.getBy({_id:id})
+  const Prods = role === "admin"? await this.prodsServices.delete(id) : prod.owner == email? await this.prodsServices.delete(id)  : false
+  if(!Prods) throw new Error
   res.json({
     status: "success",
     payload: Prods
   })
   } catch (error) {
-    res.send({status:"Error" , payload: "Sistem error"})
+    res.send({status:"Error" , payload:"No es posible borrarlo, Verifique los datos seleccionados"})
   }
 }
 
@@ -110,13 +113,18 @@ POSTPROD = async (req, res) => {
     const prodsParams = req.body
     const code = prodsParams.code
     const signal = await this.prodsServices.getBy({code:code})
-    
+    const {email} = req.user
+  if(!email){
+    return res.send({status:"error",payload:"No tiene email existente"})
+  }  
   if(signal != null){
     return res.send({status:"error",payload:"Producto ya existente"})
   }
   if(prodsParams.code == undefined || prodsParams.title == undefined || prodsParams.price == undefined || prodsParams.stock == undefined ){
     return res.send({status:"Error" , payload:"Faltan parametros"})
   }
+  prodsParams.owner = email
+  console.log(prodsParams)
  const prods = await this.prodsServices.post(prodsParams)
    return res.json({
      status: "success",

@@ -6,9 +6,9 @@ const Control = new productControl
 const routes = Router()
 routes.get('/gets',Control.GETQUERY)
 routes.get('/get',Control.GET)
-routes.delete('/:id',[passportCall('jwt'),authentication(["ADMIN"])],Control.DELETEDPROD)
+routes.delete('/:id',[passportCall('jwt'),authentication(["USUARIO_PREMIUM","ADMIN"])],Control.DELETEDPROD)
 routes.put('/:id',[passportCall('jwt'),authentication(["ADMIN"])],Control.PUTPROD)
-routes.post('/',[passportCall('jwt'),authentication(["ADMIN"])] ,Control.POSTPROD)
+routes.post('/',[passportCall('jwt'),authentication(["USUARIO_PREMIUM","ADMIN"])] ,Control.POSTPROD)
 routes.get('/:id', Control.GETIDPROD)
 
 

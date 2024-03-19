@@ -18,7 +18,9 @@ const configObject = {
      gh_client_id:process.env.clientID,
      gh_client_secret:process.env.clientSecret,
      ghSecret:process.env.secretGH,
-     persistence:process.env.persistence
+     persistence:process.env.persistence,
+     email_pws:process.env.email_password,
+     email:process.env.email_
 }
 
 const connectDb = async () => {

@@ -19,5 +19,15 @@ class UsersDB{
             throw Error
         }
     }
+    async putBy(ema, filterChange){
+        try {
+            return await usersModels.findOneAndUpdate({email:ema},filterChange,{
+                new:true
+            })
+        } catch (error) {
+            req.logger.error(error)
+            throw Error
+        }
+    }
 }
 export default UsersDB

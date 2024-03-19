@@ -1,8 +1,9 @@
 import jwt  from "jsonwebtoken";
-const JwtPrivateKey = "CoderSecretoJWT"
+import { configObject } from "../config/indexDb.js";
+const JwtPrivateKey = configObject.jwt_secret_key
 
 const createToken = user => jwt.sign(user, JwtPrivateKey, {expiresIn: '1d'})
-
+const decodeToken = token => jwt.decode(token,{complete:true})
 const authenticationToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
     req.logger.info(authHeader)
@@ -20,6 +21,7 @@ const authenticationToken = (req, res, next) => {
 
 export {
     createToken,
+    decodeToken,
     authenticationToken,
     JwtPrivateKey
 }

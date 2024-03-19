@@ -1,22 +1,21 @@
 import nodemailer from "nodemailer"
-import { configObject } from "../config/indexDb"
+import { configObject } from "../config/indexDb.js"
 
 const transport = nodemailer.createTransport({
     service:"gmail",
-    port:182,
+    port:configObject.PORT,
     auth:{
-        // user: usar configObject
-        // pass:
+        user:configObject.email,
+        pass:configObject.email_pws
     }
 })
-const sendEmail = async(destino, subject, html)=>{
-    transport.sendMail({
-        from:`envio de email from`,
-        to:destino, //gmail de destino
-        subject, // el porque del email
-        html, /// html a enviar
+const sendEmail = async(destino, subject, html, attachments)=>{
+   return await transport.sendMail({
+        from:configObject.email ,
+        to:destino, 
+        subject, 
+        html, 
         attachments:[{
-            ///aqui va lo que quieres enviar
         }]
         
     })

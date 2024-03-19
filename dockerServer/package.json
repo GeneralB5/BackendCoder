@@ -1,0 +1,18 @@
+{
+  "name": "backendcoder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Http.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": " nodemon ./indexDoc.js",
+    "start": "nodemon ./indexDoc.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

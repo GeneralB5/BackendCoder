@@ -6,3 +6,7 @@ error: undefined
 error: undefined
 error: error de endpoint /logger
 fatal: fatal de endpoint /logger
+error: undefined {"cause":"One or more properties are incorrect or invalid:\n    * email : need to be a string, we recived ian@gmai\n    * password : need to be a string, we recived undefined\n    ","code":1,"name":"User creation error"}
+error: undefined
+error: undefined
+error: undefined

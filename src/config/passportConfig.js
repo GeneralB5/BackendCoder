@@ -9,18 +9,17 @@ const ExtractJWT = JWT.ExtractJwt
 const userService   = new UsersDB()
 const {gh_client_secret,gh_client_id}=configObject
 const initializePassport = () => {
-    // credenciales
-    //GUARDAR
+    
     passport.serializeUser((user, done)=>{
         done(null, user.id)
     })
-    //RECUPERAR
+    
     passport.deserializeUser(async (id, done)=>{
         let user = await userService.searchUserby({_id:id})
         done(null, user)
     })
     
-    ///cookie
+    
     const cookieExtractor = req => {
         let token = null
         if (req && req.cookies) {
@@ -29,8 +28,7 @@ const initializePassport = () => {
         return token
 
     }
-    // una estrategia es un middleware
-
+    
     passport.use('jwt', new jwtStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: 'CoderSecretoJWT'

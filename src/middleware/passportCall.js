@@ -6,7 +6,8 @@ const passportCall = strategy => {
         passport.authenticate(strategy,async function(err, user, info){
             if (err) return next(err)          
             if(!user) return res.status(401).send({status: 'error', error: info.message ? info.message : info.toString()})
-            const users = await services.searchUserby({_id:user._id})            
+            const users = await services.searchUserby({_id:user._id})
+            if(!users.role) users.role = user.role
             req.user = users
             next()
         })(req, res, next)

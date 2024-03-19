@@ -34,5 +34,11 @@ getView = (req,res)=>{
       role: req.user.role.toUpperCase() != "ADMIN"
     })
   }
+  forgottenPassword = async(req,res)=>{
+    res.render('forgotten')
+  }
+  newpassword = async(req,res)=>{
+    res.render('newPassword')
+  }
 }
 export default viewRouter

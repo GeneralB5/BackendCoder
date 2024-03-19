@@ -114,8 +114,12 @@ putCustomCart = async(req,res)=>{
 
 putCustomQuant = async (req, res) => {
   try {
-    const {Cid,Pid} = req.params;
+    
+    const {Pid} = req.params;
+    
     const {quant} = req.body
+
+    console.log(req.user , Pid ,quant)
     let usedFunc
     if(quant != 0){
       usedFunc = await this.cartServices.updateQua(Cid,Pid,quant)
@@ -139,8 +143,8 @@ if(!cart || req.user.email == undefined) res.send({status:"error", payload:"with
 
   let ticketProd = 0
     const updateCart = cart.products.map(async ({id , quant}) => {
-    const {stock , price} = await this.productServices.getBy({_id:id})
-    if(stock >= quant){
+    const {stock , price , owner} = await this.productServices.getBy({_id:id})
+    if(stock >= quant && owner != req.user.email){
       ticketProd += quant*price
       const quantF = stock - quant
       await this.cartServices.updateP(id,quantF)

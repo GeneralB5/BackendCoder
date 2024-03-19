@@ -82,6 +82,11 @@ const  prodsSchema = new Schema({
     category:{
         type:String,
         require:true
+    },
+    owner:{
+        type:String,
+        require:true,
+        default:"adminCoder@coder.com"
     }
 })
 const orderSchema = new Schema({
