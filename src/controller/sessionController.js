@@ -132,7 +132,7 @@ postNewPassword = async(req,res,next)=>{
         const {email , lifeTime} = payload
         if(lifeTime < new Date().getTime()) return res.status(400).send({status:"Error",payload:'Ya pasaste el tiempo limite'})
         const userPassword = await this.userServices.searchUserby({email})
-        if(validatePassword(password,userPassword)) throw new Error
+        if(validatePassword(password,userPassword.password)) throw new Error
         const passwordToSend = createPassword(password)
         await this.userServices.changePassword(email,passwordToSend)
         res.redirect('/login')
@@ -156,7 +156,7 @@ getUserData = async(req,res,next)=>{
         console.log(req.user)
         const data = await this.userServices.getBy({email:req.user.email})
         console.log(data)
-        res.status(200).send({staus:"ok", payload})
+        res.status(200).send({staus:"ok", payload:data})
     } catch (error) {
         next(error)
     }
