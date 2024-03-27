@@ -47,8 +47,9 @@ postRegister = async (req, res, next)=>{
 }
 postLogin = async (req, res)=>{   
     try {
-        const  {email,password} = req.body
         
+        const  {email,password} = req.body
+
         if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
             const {_id} = await this.userServices.searchUserby({email})
             const token = createToken({_id,role:"admin"})
@@ -82,17 +83,22 @@ postLogin = async (req, res)=>{
                         status:"error",
                         data:"no coinciden las contraseñas"
                     })}
+                    
                 const token = createToken({_id:user._id,role:user.role})
+                res.cookie('isLogged','isLogged',{
+                    maxAge: 60 * 60 * 1000 * 24,
+                    secure:false            
+                        })
                 res.cookie('token', token,{
                 maxAge: 60 * 60 * 1000 * 24,
                 httpOnly: true,
                 secure:false            
-            })
-                 req.user = {
-                     email: email,
-                     rol: user.role
-                 }
+                    })
+                
+                
+                
                 res.redirect('/api/productos/gets')
+                
             } catch (error) {
                 req.logger.error(error)
                 throw Error
@@ -153,9 +159,10 @@ getCurrent = async (req,res)=>{
  }
 getUserData = async(req,res,next)=>{
     try {
-        console.log(req.user)
-        const data = await this.userServices.getBy({email:req.user.email})
-        console.log(data)
+        const {email} = req.user
+        const data = await this.userServices.searchUserby({email})
+        delete data.password
+        if(!data) throw new Error
         res.status(200).send({staus:"ok", payload:data})
     } catch (error) {
         next(error)

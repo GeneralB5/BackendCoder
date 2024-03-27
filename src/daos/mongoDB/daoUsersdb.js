@@ -1,4 +1,5 @@
 import { usersModels } from "./models/modules.js";
+import { logger } from "../../utilis/logger.js";
 class UsersDB{
     constructor(){
 
@@ -7,15 +8,15 @@ class UsersDB{
         try {
             return await usersModels.create({first_name:fm,last_name:ln,email,age,password:pass,role:r,cartId,fullname})   
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
     async getBy(all){
         try {
-            return await usersModels.findOne(all)    
+            return await usersModels.findOne(all).lean()    
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
@@ -25,7 +26,7 @@ class UsersDB{
                 new:true
             })
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }

@@ -9,7 +9,9 @@ class productControl{
     }
 GET = async(req,res)=>{
   try {
-    const prod = await this.prodsServices.getProducts()
+    const {query} = req.query 
+    if(!query) throw new Error
+    const prod = await this.prodsServices.getProducts(query)
     res.send({status:"succes", payload:prod})
   } catch (error) {
     res.send({status:"Error", payload:"Request error"})
@@ -22,7 +24,7 @@ GETQUERY = async (req, res) => {
   let ln = undefined
   
   
-  if(req.user){
+if(req.user){
   const role = req.user.role
   if(role != "admin"){
  const {first_name,last_name} = await this.userServices.searchUserby({_id:req.user._id})

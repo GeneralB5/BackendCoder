@@ -10,3 +10,8 @@ error: undefined {"cause":"One or more properties are incorrect or invalid:\n   
 error: undefined
 error: undefined
 error: undefined
+error: undefined {"code":"ERR_HTTP_HEADERS_SENT"}
+error: undefined
+error: undefined
+error: undefined
+error: undefined

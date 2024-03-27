@@ -1,3 +1,4 @@
+import { logger } from "../../utilis/logger.js";
 import { cartsModel,prodsModel } from "./models/modules.js";
 
 class daoCarts{
@@ -9,7 +10,7 @@ class daoCarts{
         try {
             return await cartsModel.create({products:[]})
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
         }
 
     }
@@ -17,30 +18,30 @@ class daoCarts{
         try {
             return await prodsModel.findOne(all)            
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
     async getByCart(all){
         try {
-            return await cartsModel.find(all)            
+            return await cartsModel.findOne(all)            
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
-    async postToCart(idCart,prod){   
+    async postToCart(idCart,prod ,quant){   
         try {
         await cartsModel.updateOne(
                  {_id:idCart}
-                ,{$inc:{'products.$[e].quant':1}}
+                ,{$inc:{'products.$[e].quant':quant}}
                 ,{arrayFilters:[
                     {"e.id":prod}
                  ],
              multi:true
          })           
         }catch (error) {
-            req.logger.error(error)            
+            logger.error(error)            
             throw Error
         }
     }
@@ -48,7 +49,7 @@ class daoCarts{
         try {
         return await cartsModel.deleteOne({_id:id})    
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
@@ -84,7 +85,7 @@ class daoCarts{
                 return "no se encontro producto"
              }
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
@@ -92,17 +93,16 @@ class daoCarts{
         try {
             return await cartsModel.updateOne({_id:Cid},{products:[]})
         } catch (error) {
-            req.logger.error("no existe")
+            logger.error("no existe")
             throw Error
         }
     }
-    ///update del cart (solo funciona con todas las condiciones cumplidas)
     async addToCart(Cid,prod){
         try {
-            req.logger.error(prod)
+            logger.info(prod)
             return await cartsModel.updateOne({_id:Cid},{$push:{products:prod}})    
             } catch (error) {
-                req.logger.error(error)
+                logger.error(error)
                 throw Error
             }
     }
@@ -110,29 +110,32 @@ class daoCarts{
             try {
             return await cartsModel.updateOne({_id:Cid},prod)    
             } catch (error) {
-                req.logger.error(error)
+                logger.error(error)
                 throw Error
             }
     }
-    /// update de quant
     async putQuant(Cid,Pid,quant){
-    if(!isNaN(quant)){
-        return await cartsModel.updateOne( 
-        {_id:Cid},
-        {'products.$[e].quant':quant},
-        {arrayFilters:[
-            {"e.id":Pid}
-        ],
-    multi:true
-})
-    }else{
-        return new Error
-    }
+        try {
+            return await cartsModel.updateOne( 
+                {_id:Cid},
+                {'products.$[e].quant':quant},
+                {arrayFilters:[
+                    {"e.id":Pid}
+                ],
+                multi:true
+            })
+        }catch (error) {
+            throw new Error
+        }
+    
         
-    }
+}
+    
+        
+    
    async putProd (Pid,quant){
     try {
-                return await prodsModel.updateOne({_id:Pid},{stock:quant})    
+        return await prodsModel.updateOne({_id:Pid},{stock:quant})    
     } catch (error) {
         throw Error(error)
     }}

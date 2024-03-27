@@ -1,4 +1,5 @@
 import { userModel } from "./models/modules.js";
+import { logger } from "../../utilis/logger.js";
 class userDao{
     constructor(){
 
@@ -8,7 +9,7 @@ class userDao{
             const {messages} = await userModel.findOne({NameId:'messages'})
             return messages
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
@@ -16,7 +17,7 @@ class userDao{
         try {
             return await userModel.create({NameId:"messages",messages:[x]})  
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }
@@ -24,7 +25,7 @@ class userDao{
         try {    
         return await userModel.updateOne({NameId:"messages"},{$push:{messages:x}})
         } catch (error) {
-            req.logger.error(error)
+            logger.error(error)
             throw Error
         }
     }

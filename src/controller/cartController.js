@@ -21,40 +21,43 @@ postCreate= async (req, res) => {
     })   
   }
 }
-//segundo post manda el producto seleccionado y si se manda mas de una vez se suma el quantity
+
 postAdd = async (req, res) => {
   try {
-    const idCartparams = req.params.Cid;
+    const {quant} = req.body
+    const idCartparams = req.user.cartId;
     const idProdsParams = req.params.Pid;
-    // const usedFunc = await addCart(idCartparams,idProdsParams)
     const existProd = await this.cartServices.getByPro({_id:idProdsParams})
     const existCart = await this.cartServices.getByCa({$and:[{_id:idCartparams},{"products.id":idProdsParams}]})
-    if(existProd != []){
-      if(existCart.length == 0){
-        await this.cartServices.addProduct(idCartparams,{id:idProdsParams, quant:1})
-        return res.json({status:"success",payload:"Added"});  
+    if(!existProd) return res.send({status:"Error",payload:"Product not found"})
+      if(!existCart){
+        const prod = await this.cartServices.addProduct(idCartparams,{id:idProdsParams, quant:quant})
+        return res.send({status:"success",payload:prod});  
       }else{
-        const usedFunc = await this.cartServices.postIncP(idCartparams,idProdsParams)
-        res.json({status:"success",payload:usedFunc});  
+        const usedFunc = await this.cartServices.postIncP(idCartparams,idProdsParams,quant)
+        res.send({status:"success",payload:usedFunc});  
       }
-    }else{
-      res.send({status:"Error",payload:"Product not found"})
-    }
-    
   } catch (error) {
     res.send({
       status:"Error hola"
     })   
   } 
 }
-// el get te obtiene los productos con el quantity
-getCart = async (req, res) => {
+getCart = async (req, res, next) => {
   try {
-    if( req.params.Cid ) return await this.cartServices.getByCa({_id:req.params.Cid})
+    if(!req.user.cartId) throw new Error 
+    const {products} = await this.cartServices.getByCa({_id:req.user.cartId})
+    const cart = []
+    if(products.length == 0) return res.send({status:"ok",payload:products})
+    const ProdsSearch = products.map( async (product)=>{
+        const {id} = product
+        const prods = await this.productServices.getBy({_id:id})
+        cart.push(prods)
+    })
+    await Promise.all(ProdsSearch)  
+    res.send({status:"ok",payload:cart})
   } catch (error) {
-    res.send({
-      status:"Error"
-    })   
+    next(error)
   }
     
 }
@@ -94,15 +97,11 @@ deleteCart = async(req,res)=>{
 putCustomCart = async(req,res)=>{
   try {
     const body =  req.body
-    const {Cid} = req.params
-    if(body.quant > 0){
+    const {Cid} = req.user.cartId
+    if(body.quant > 0) throw new Error
     const newCart = await this.cartServices.updateC(Cid,{products:body})
-    return newCart
-  }else{
-    res.send("quant error")
-  }
     res.send({
-      status:"success",
+      status:"New cart updated",
       payload:newCart
     })  
   } catch (error) {
@@ -114,16 +113,12 @@ putCustomCart = async(req,res)=>{
 
 putCustomQuant = async (req, res) => {
   try {
-    
     const {Pid} = req.params;
-    
     const {quant} = req.body
-
-    console.log(req.user , Pid ,quant)
-    let usedFunc
-    if(quant != 0){
-      usedFunc = await this.cartServices.updateQua(Cid,Pid,quant)
-    }
+    const {cartId} = req.user
+    if(quant != 0) throw new Error
+    const usedFunc = await this.cartServices.updateQua(cartId,Pid,quant)
+    console.log(usedFunc)
       res.json({
         status:"success",
         payload:usedFunc
