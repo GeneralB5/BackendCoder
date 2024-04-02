@@ -95,7 +95,7 @@ postLogin = async (req, res)=>{
                 secure:false            
                     })
                 
-                
+                res.status(200).send({status:"ok"})
                 
                 res.redirect('/api/productos/gets')
                 

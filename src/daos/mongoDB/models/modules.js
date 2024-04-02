@@ -44,7 +44,8 @@ const usersSchema= new Schema({
     },
     role:{
         type:String,
-        require:true
+        require:true,
+        default:"usuario"
     },
     cartId:String,
     fullname:String
