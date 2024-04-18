@@ -4,9 +4,10 @@ import { createToken, decodeToken } from "../utilis/Jwt.js";
 import { createPassword, validatePassword } from "../utilis/hashPassword.js";
 import servicesC from "../services/cartServices.js";
 import customError from "../services/error/customError.js";
-import { generateInfoError, generateInfoErrorLogin } from "../services/error/infoError.js";
+import { generateInfoError, generateInfoErrorLogin, generateInfoPremiumUser } from "../services/error/infoError.js";
 import ErrorNum from "../services/error/errorNum.js";
 import sendEmail from "../utilis/email.js";
+import { incld } from "../helper/middleMulter.js";
 class logsRouter{
     constructor(){
         this.userServices = services
@@ -45,7 +46,7 @@ postRegister = async (req, res, next)=>{
                 next(err)
             }
 }
-postLogin = async (req, res)=>{   
+postLogin = async (req, res, next)=>{   
     try {
         
         const  {email,password} = req.body
@@ -84,6 +85,8 @@ postLogin = async (req, res)=>{
                         data:"no coinciden las contraseñas"
                     })}
                     
+                await this.userServices.lastConnection(email)
+                
                 const token = createToken({_id:user._id,role:user.role})
                 res.cookie('isLogged','isLogged',{
                     maxAge: 60 * 60 * 1000 * 24,
@@ -95,13 +98,11 @@ postLogin = async (req, res)=>{
                 secure:false            
                     })
                 
-                res.status(200).send({status:"ok"})
-                
                 res.redirect('/api/productos/gets')
                 
             } catch (error) {
                 req.logger.error(error)
-                throw Error
+                next(error)
             }
 }
 postForgottenPass=async (req,res,next)=>{
@@ -134,11 +135,15 @@ postNewPassword = async(req,res,next)=>{
         const {password,password2,token} = req.body
         if(password !== password2) throw new Error //hancle err
         if(!token)throw new Error
+
         const {payload} = decodeToken(token)
         const {email , lifeTime} = payload
+
         if(lifeTime < new Date().getTime()) return res.status(400).send({status:"Error",payload:'Ya pasaste el tiempo limite'})
+
         const userPassword = await this.userServices.searchUserby({email})
         if(validatePassword(password,userPassword.password)) throw new Error
+
         const passwordToSend = createPassword(password)
         await this.userServices.changePassword(email,passwordToSend)
         res.redirect('/login')
@@ -170,20 +175,100 @@ getUserData = async(req,res,next)=>{
 }
 PremiumUserPass = async(req,res,next)=>{
     try {
-    const {email,role} = req.user
+    const {documents,email,role} = req.user
     if(!email || !role) res.status(401).send({status:"error",payload:"Falta de informacion"})
     let change = role == "usuario" ? "usuario_premium" : "usuario"
+    const arryWtDocs = []
+    documents.map(x => arryWtDocs.push(x.name) )
+    
+    if(!arryWtDocs.includes('identification') 
+    || !arryWtDocs.includes('comprobant_domic') 
+    || !arryWtDocs.includes('Comprobant_de_estado')){
+       customError.createError({
+        name:"Insufficient documentacion",
+        cause:generateInfoPremiumUser(arryWtDocs), 
+        message:`Error trying upgrade to ${change}`,
+        code:ErrorNum.InsufficientDT
+       })
+    }
     await this.userServices.changePremiumUser(email,change)
     res.status(200).send({status:"success",payload:`Role: ${change}`})
+    res.send({status:"ok"})
     } catch (error) {
         next(error)
     } 
 }
 postLogout =async (req,res)=>{
+    const { email } = req.user
+    await this.userServices.lastConnection(email)
     res.clearCookie('token')
     res.send("Se a deslogueado correctamente")
-    }
+}
+postDocuments = async(req,res,next)=>{
+ try {
+     const {documents,email} = req.user
+    if(!email){
+        customError.createError({
+          name:"email error",
+          cause:`email : need to be a string, we recived ${email}`, 
+          message:"Error trying to update document",
+          code:ErrorNum.InvalidTypes
+          })
+      }
 
+if(req.files.identification){
+    req.files.identification.map(async(dco)=>{
+    incld(documents,dco.fieldname) ? 
+            await this.userServices.updateDco(email,dco.path,dco.fieldname):
+            await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
+    })
+}
+
+if(req.files.comprobant_domic){
+    req.files.comprobant_domic.map(async(dco)=>{
+        incld(documents,dco.fieldname) ? 
+            await this.userServices.updateDco(email,dco.path,dco.fieldname):
+            await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
+    })
+}
+
+if(req.files.Comprobant_de_estado){
+    req.files.Comprobant_de_estado.map(async(dco)=>{
+        incld(documents,dco.fieldname) ? 
+            await this.userServices.updateDco(email,dco.path,dco.fieldname):
+            await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
+    })
+}
+
+res.send({status:"ok"})
+
+ } catch (error) {
+    next(error)
+ }   
+}
+postProfilePic= async(req,res,next)=>{
+    const {email} = req.user
+    const pictureFL = req.file
+    if(!email){
+        customError.createError({
+          name:"email error",
+          cause:`email : need to be a string, we recived ${email}`, 
+          message:"Error trying to update document",
+          code:ErrorNum.InvalidTypes
+          })
+      }
+    if(!pictureFL){
+            customError.createError({
+              name:"Profile picture error",
+              cause:`Picture Path : need to be a string, we recived ${pictureFL.path}`, 
+              message:"Error trying to update profile picture",
+              code:ErrorNum.InsufficientDT
+              })
+    }
+    //update de profile picture
+    // await this.userServices.changeProfilePic(email,pictureFL.path)
+    // res.send({status:"Ok" , payload: "Changed"})
+}
 getGithub = async (req,res)=>{}
 
 getGitRegister = async (req, res)=>{

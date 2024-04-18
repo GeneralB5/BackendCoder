@@ -40,5 +40,8 @@ getView = (req,res)=>{
   newpassword = async(req,res)=>{
     res.render('newPassword')
   }
+  document = async(req,res)=>{
+    res.render('docs')
+  }
 }
 export default viewRouter

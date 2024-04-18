@@ -1,5 +1,4 @@
 import { usersModels } from "./models/modules.js";
-import { logger } from "../../utilis/logger.js";
 class UsersDB{
     constructor(){
 
@@ -8,16 +7,14 @@ class UsersDB{
         try {
             return await usersModels.create({first_name:fm,last_name:ln,email,age,password:pass,role:r,cartId,fullname})   
         } catch (error) {
-            logger.error(error)
-            throw Error
+            throw new Error
         }
     }
     async getBy(all){
         try {
             return await usersModels.findOne(all).lean()    
         } catch (error) {
-            logger.error(error)
-            throw Error
+            throw new Error
         }
     }
     async putBy(ema, filterChange){
@@ -26,8 +23,30 @@ class UsersDB{
                 new:true
             })
         } catch (error) {
-            logger.error(error)
-            throw Error
+            throw new Error
+        }
+    }
+    async addNewDoc(email,doc){
+        try {
+            return await usersModels.updateOne({email},{$push:{documents:doc}})
+        } catch (error) {
+            throw new Error
+        }
+    }
+    async updateDoc(email,dcoPath,fieldName){
+        try {
+            return await usersModels.updateOne({email},
+                {$set:{'documents.$[e].reference':dcoPath}}
+                ,{arrayFilters:[
+                    {"e.name":fieldName}
+                 ],
+                multi:true
+                }
+                 
+            )
+        } catch (error) {
+            console.log(error)
+            throw new Error
         }
     }
 }

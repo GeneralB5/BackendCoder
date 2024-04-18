@@ -48,7 +48,14 @@ const usersSchema= new Schema({
         default:"usuario"
     },
     cartId:String,
-    fullname:String
+    fullname:String,
+    documents:{
+        type:Array,
+        require:true,
+        default:[]
+    },
+    last_connection:String
+
 })
 const  prodsSchema = new Schema({
     title:{

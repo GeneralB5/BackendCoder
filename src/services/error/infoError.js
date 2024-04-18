@@ -11,4 +11,17 @@ const generateInfoErrorLogin = (user)=>{
     * password : need to be a string, we recived ${user.password}
     `
     }
-export {generateInfoError , generateInfoErrorLogin}
+
+const generateInfoPremiumUser = (arry)=>{
+        return `One or more properties are incorrect or invalid:
+        * identification : need to be a string, we recived ${arry.includes('identification') || undefined}
+        * comprobant_domic : need to be a string, we recived ${arry.includes('comprobant_domic' || undefined)}
+        * comprobant_de_estado : need to be a string, we recived ${arry.includes('Comprobant_de_estado') || undefined}
+        `
+        }
+        
+export {
+    generateInfoError, 
+    generateInfoErrorLogin,
+    generateInfoPremiumUser
+}

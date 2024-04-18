@@ -9,4 +9,5 @@ const viewRoutes = Router()
   viewRoutes.get('/chatRealTime',[passportCall('jwt')],control.getChatRealTime)
   viewRoutes.get('/forgottenPass',control.forgottenPassword)
   viewRoutes.get('/newPassword',control.newpassword)
+  viewRoutes.get('/documents',control.document)
 export default viewRoutes
