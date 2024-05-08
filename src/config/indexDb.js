@@ -20,7 +20,7 @@ const configObject = {
      email:process.env.email_,
      Stripe_secret:process.env.stripe_secret
 }
-logger.info(process.env)
+logger.info(process.env.MONGOURI)
 logger.info(configObject)
 const connectDb = async () => {
     try {
