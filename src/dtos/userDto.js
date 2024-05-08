@@ -10,4 +10,12 @@ class  UserConstructor{
     }
 
 }
-export default UserConstructor
+class  UserLegalInfo{
+    constructor(newUser){
+        this.first_name = newUser.first_name
+        this.email= newUser.email
+        this.role= newUser.role
+    }
+}
+
+export {UserConstructor,UserLegalInfo}

@@ -18,10 +18,14 @@ import { swaggerOptions } from './config/swaggerOptions.js';
 import socket from './socket/socket.js';
 const app = express()
 connectDb()
-app.use(json())
-app.use(urlencoded({extended:true}))
-app.use(cors({credentials: true, origin: true}))
-
+app.use(json({limit:'50mb'}))
+app.use(urlencoded({limit:'50mb',extended:true}))
+app.use(cors({
+  credentials: true, 
+  origin: true,
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}))
 const specs = swaggerJSDoc(swaggerOptions)
 app.use('/apiDocs', SwaggerUiExpress.serve,SwaggerUiExpress.setup(specs))
 

@@ -20,7 +20,8 @@ const configObject = {
      ghSecret:process.env.secretGH,
      persistence:process.env.persistence,
      email_pws:process.env.email_password,
-     email:process.env.email_
+     email:process.env.email_,
+     Stripe_secret:process.env.stripe_secret
 }
 
 const connectDb = async () => {

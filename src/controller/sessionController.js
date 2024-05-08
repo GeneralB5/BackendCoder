@@ -1,5 +1,5 @@
 import services from "../services/userServ.js";
-import UserConstructor from "../dtos/userDto.js";
+import { UserConstructor , UserLegalInfo } from "../dtos/userDto.js";
 import { createToken, decodeToken } from "../utilis/Jwt.js";
 import { createPassword, validatePassword } from "../utilis/hashPassword.js";
 import servicesC from "../services/cartServices.js";
@@ -13,7 +13,6 @@ class logsRouter{
         this.userServices = services
         this.cartServices = servicesC
     }
-    //revisar el register y login por seguridad
 postRegister = async (req, res, next)=>{ 
     try {
                 
@@ -48,9 +47,7 @@ postRegister = async (req, res, next)=>{
 }
 postLogin = async (req, res, next)=>{   
     try {
-        
         const  {email,password} = req.body
-
         if(email.trim() === 'adminCoder@coder.com' && password.trim() === 'adminCod3r123'){
             const {_id} = await this.userServices.searchUserby({email})
             const token = createToken({_id,role:"admin"})
@@ -86,7 +83,7 @@ postLogin = async (req, res, next)=>{
                     })}
                     
                 await this.userServices.lastConnection(email)
-                
+                delete user.password
                 const token = createToken({_id:user._id,role:user.role})
                 res.cookie('isLogged','isLogged',{
                     maxAge: 60 * 60 * 1000 * 24,
@@ -98,7 +95,7 @@ postLogin = async (req, res, next)=>{
                 secure:false            
                     })
                 
-                res.redirect('/api/productos/gets')
+                res.send({status:"ok",payload:user})
                 
             } catch (error) {
                 req.logger.error(error)
@@ -176,6 +173,7 @@ getUserData = async(req,res,next)=>{
 PremiumUserPass = async(req,res,next)=>{
     try {
     const {documents,email,role} = req.user
+    console.log(req.user)
     if(!email || !role) res.status(401).send({status:"error",payload:"Falta de informacion"})
     let change = role == "usuario" ? "usuario_premium" : "usuario"
     const arryWtDocs = []
@@ -191,8 +189,8 @@ PremiumUserPass = async(req,res,next)=>{
         code:ErrorNum.InsufficientDT
        })
     }
-    await this.userServices.changePremiumUser(email,change)
-    res.status(200).send({status:"success",payload:`Role: ${change}`})
+    const user = await this.userServices.changePremiumUser(email,change)
+    res.status(200).send({status:"success",payload:user})
     res.send({status:"ok"})
     } catch (error) {
         next(error)
@@ -207,6 +205,7 @@ postLogout =async (req,res)=>{
 postDocuments = async(req,res,next)=>{
  try {
      const {documents,email} = req.user
+     console.log(req.files)
     if(!email){
         customError.createError({
           name:"email error",
@@ -247,6 +246,9 @@ res.send({status:"ok"})
  }   
 }
 postProfilePic= async(req,res,next)=>{
+
+    ///revisar si funciona el actualizar el profile
+
     const {email} = req.user
     const pictureFL = req.file
     if(!email){
@@ -268,6 +270,38 @@ postProfilePic= async(req,res,next)=>{
     //update de profile picture
     // await this.userServices.changeProfilePic(email,pictureFL.path)
     // res.send({status:"Ok" , payload: "Changed"})
+}
+getUsersInformation = async(req,res)=>{
+    //test it
+    const users = await this.userServices.findAllUsers()
+    const arryUsers = []
+    console.log(users)
+    users.map(user =>{
+        const updatedUser = new UserLegalInfo(user)
+        arryUsers.push(updatedUser)
+    })
+
+    res.send({status:"Ok" , payload:arryUsers})
+}
+deleteInactiveUsers=async(req,res)=>{
+    //test it solo accesible para el admin
+    const users = await this.userServices.findAllUsers()
+    users.map(async user =>{
+        const {last_connection,_id ,role} = user
+        if(role.toLowerCase() != "admin" && user.last_connection != undefined){
+            console.log(role)
+            const La_Co = last_connection.split(' ')
+            const num = parseInt(La_Co[1])
+            
+            const date =new Date()
+            const numDia = date.getDate()
+            console.log(numDia ,num)
+            if(2 <= numDia - num)console.log("borrado")
+            // if(2 > numDia - num)await this.userServices.deleteUser(_id)
+        }
+    })
+    res.send({status:"ok"})
+
 }
 getGithub = async (req,res)=>{}
 

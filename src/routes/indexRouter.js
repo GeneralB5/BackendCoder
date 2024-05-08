@@ -4,14 +4,14 @@ import Cartroutes from './apis/cartRoute.js';
 import logsRoutes from './apis/session.js';
 import viewRoutes from './viewsRouter.js';
 import usersRoutes from './apis/userRouter.js';
+import paymentRoutes from "./apis/paymentRoute.js";
 const route = Router()
-
+route.use('/pay', paymentRoutes)
 route.use('/api/productos',routes)
 route.use('/api/cart',Cartroutes)
 route.use('/api/session',logsRoutes)
 route.use('/',usersRoutes)
 route.use("/views",viewRoutes)
-
 route.use("/loggerTest" , (req,res)=>{
 req.logger.debug("debug de endpoint /logger")
 req.logger.http("http de endpoint /logger")

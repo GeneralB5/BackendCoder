@@ -7,7 +7,7 @@ class daoProducts{
     
    async seeAllProducts(all={}){
     try {
-        return await prodsModel.find(all)
+        return await prodsModel.find(all).lean()
     } catch (error) {
      logger.error(error)   
      throw Error
@@ -16,7 +16,7 @@ class daoProducts{
     
    async seeAll(all){
     try {
-        return await prodsModel.findOne(all)        
+        return await prodsModel.findOne(all).lean()
     } catch (error) {
         logger.error(error)
         throw Error

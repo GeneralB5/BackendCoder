@@ -10,6 +10,13 @@ class UsersDB{
             throw new Error
         }
     }
+    async findAll(){
+        try {
+            return await usersModels.find({}).lean()    
+        } catch (error) {
+            throw new Error
+        }
+    }
     async getBy(all){
         try {
             return await usersModels.findOne(all).lean()    
@@ -29,6 +36,13 @@ class UsersDB{
     async addNewDoc(email,doc){
         try {
             return await usersModels.updateOne({email},{$push:{documents:doc}})
+        } catch (error) {
+            throw new Error
+        }
+    }
+    async deleteUser(_id){
+        try {
+            return await usersModels.deleteOne({_id:_id})
         } catch (error) {
             throw new Error
         }

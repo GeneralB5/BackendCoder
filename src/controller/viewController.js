@@ -1,8 +1,9 @@
-import daoProducts from "../daos/mongoDB/daoProducts.js";
+import servicesP from "../services/prodServ.js";
+import services from "../services/userServ.js";
 class viewRouter{
     constructor(){
-        this.prodServices = new daoProducts()
-
+        this.prodServices = servicesP
+        this.userServices = services
     }
 getView = (req,res)=>{
     res.render('index',{
@@ -25,7 +26,7 @@ getView = (req,res)=>{
       name:"toma",
       Title:"E-commerce",
       isAdmin: true,
-      products: await this.prodServices.seeAllProducts()
+      products: await this.prodServices.getProducts()
     })
   }
   getChatRealTime = async(req,res)=>{
@@ -42,6 +43,11 @@ getView = (req,res)=>{
   }
   document = async(req,res)=>{
     res.render('docs')
+  }
+  adminUpdates =async(rea,res)=>{
+    res.render('adminUpdate',{
+      users: await this.userServices.findAllUsers()
+    })
   }
 }
 export default viewRouter

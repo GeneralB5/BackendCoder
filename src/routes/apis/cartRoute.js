@@ -5,8 +5,8 @@ import authentication from "../../middleware/auth.js";
 const control = new cartControl
 const Cartroutes = Router()
 Cartroutes.post('/',[passportCall('jwt'),authentication(["USUARIO"])],control.postCreate)
-Cartroutes.post('/userCart/products/:Pid',[passportCall('jwt'),authentication(["USUARIO"])],control.postAdd)
-Cartroutes.get('/userCart',[passportCall('jwt'),authentication(["USUARIO"])],control.getCart)
+Cartroutes.post('/userCart/products/:Pid',[passportCall('jwt'),authentication(["USUARIO","USUARIO_PREMIUM"])],control.postAdd)
+Cartroutes.get('/userCart',[passportCall('jwt'),authentication(["USUARIO","USUARIO_PREMIUM"])],control.getCart)
 Cartroutes.delete("/:Cid/products/:Pid",[passportCall('jwt'),authentication(["USUARIO"])],control.deleteProd)
 Cartroutes.delete("/:Cid",[passportCall('jwt'),authentication(["USUARIO"])],control.deleteCart)
 Cartroutes.put("/userCart",[passportCall('jwt'),authentication(["USUARIO"])],control.putCustomCart)

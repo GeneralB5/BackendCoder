@@ -1,0 +1,16 @@
+<h1>Only admins can see this area</h1>
+
+{{#each users}}
+        <div>
+            <h2>Name: {{this.first_name}}</h2>
+            <p>price: {{this.email}}</p>
+            <p>stock: {{this.role}}</p>
+        </div>
+        <hr>
+{{/each}}
+
+<form id="LoginForm" >
+    <span>Do you want to erase inactive users?</span>
+    <input type="submit" value="Erase">
+</form>
+<script src="/js/adminUpdates.js" type="text/javascript"></script>

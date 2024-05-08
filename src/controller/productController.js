@@ -1,6 +1,7 @@
 import services from "../services/userServ.js";
 import generateProd from "../mocking/prodMock.js";
 import servicesP from "../services/prodServ.js";
+import sendEmail from "../utilis/email.js";
 class productControl{
     constructor(){
         this.prodsServices = servicesP
@@ -9,9 +10,7 @@ class productControl{
     }
 GET = async(req,res)=>{
   try {
-    const {query} = req.query 
-    if(!query) throw new Error
-    const prod = await this.prodsServices.getProducts(query)
+    const prod = await this.prodsServices.getProducts()
     res.send({status:"succes", payload:prod})
   } catch (error) {
     res.send({status:"Error", payload:"Request error"})
@@ -78,15 +77,29 @@ DELETEDPROD = async (req, res) => {
     const {role , email} = req.user
     const id = req.params.id
   if(id == undefined){
-    res.send({status:"Error" , payload: "Falta id"})
+    res.send({stmatus:"Error" , payload: "Falta id"})
   }
   const prod = await this.prodsServices.getBy({_id:id})
-  const Prods = role === "admin"? await this.prodsServices.delete(id) : prod.owner == email? await this.prodsServices.delete(id)  : false
+  const user = await this.userServices.searchUserby({email:prod.owner})
+  if(user.role != "admin"){
+    sendEmail(
+      user.email,
+      "Deleted product",
+      `
+        <h1>Se le ha eliminado un producto de nombre ${prod.name}, y ID :${id}</h1>
+        <h2>Eliminado por: ${email}</h2<
+      `
+     )
+  }
+const Prods = role === "admin"? await this.prodsServices.delete(id) : prod.owner == email? await this.prodsServices.delete(id)  : false
   if(!Prods) throw new Error
   res.json({
     status: "success",
     payload: Prods
   })
+
+
+
   } catch (error) {
     res.send({status:"Error" , payload:"No es posible borrarlo, Verifique los datos seleccionados"})
   }
@@ -112,9 +125,11 @@ res.json({
 
 POSTPROD = async (req, res) => {
   try {
-    const prodsParams = req.body
+    const prodsParams = req.body.prod != undefined? JSON.parse(req.body.prod) : req.body
     const code = prodsParams.code
     const signal = await this.prodsServices.getBy({code:code})
+    const file = req.file
+    prodsParams.thumbnail = file.destination
     const {email} = req.user
   if(!email){
     return res.send({status:"error",payload:"No tiene email existente"})
@@ -127,7 +142,7 @@ POSTPROD = async (req, res) => {
   }
   prodsParams.owner = email
   console.log(prodsParams)
- const prods = await this.prodsServices.post(prodsParams)
+  const prods = await this.prodsServices.post(prodsParams)
    return res.json({
      status: "success",
      payload: prods

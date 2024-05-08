@@ -80,7 +80,7 @@ const  prodsSchema = new Schema({
     },
     id:String,
     status:{
-        type:Boolean,
+        type:String,
         require:true
     },
     code:{

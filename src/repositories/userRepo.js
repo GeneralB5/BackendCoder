@@ -6,6 +6,8 @@ class userRepo{
         this.userServices = new UsersDB
     }
     searchUserby=(filter) => this.userServices.getBy(filter)
+    findAllUsers=()=>this.userServices.findAll()
+    deleteUser=(_id)=>this.userServices.deleteUser(_id)
     logInUser=(user)=>this.userServices.getBy({email:user.email,password:user.password})
     createUser=(user,role)=>this.userServices.postUser(user.first_name,user.last_name,user.email,user.age,user.password,role,user.cartId,user.fullname)
     changeProfilePic=(email,picPath)=>this.userServices.putBy(email,{thumbnail:picPath})

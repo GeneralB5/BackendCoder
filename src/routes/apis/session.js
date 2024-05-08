@@ -19,6 +19,8 @@ logsRoutes.post("/documents",[upload.fields([
 ]),passportCall('jwt')],control.postDocuments)
 logsRoutes.post("/picture",[upload.single('profile'),passportCall('jwt')],control.PremiumUserPass)
 logsRoutes.get("/user",[passportCall('jwt')] ,control.getUserData)
+logsRoutes.get("/usersInformation",control.getUsersInformation)
+logsRoutes.delete("/deleteInactives",control.deleteInactiveUsers)
 logsRoutes.get('/current', [passportCall('jwt'),authentication(["PUBLIC","USUARIO","USUARIO_PREMIUN","ADMIN"])],control.getCurrent)
 logsRoutes.post('/logout',[passportCall('jwt')],control.postLogout)
  logsRoutes.get('/github', passport.authenticate('github',{failureRedirect:'/api/session/failGithub'}, {scope:['user:email']}),control.getGithub)

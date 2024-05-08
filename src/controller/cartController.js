@@ -29,6 +29,7 @@ postAdd = async (req, res) => {
     const idProdsParams = req.params.Pid;
     const existProd = await this.cartServices.getByPro({_id:idProdsParams})
     const existCart = await this.cartServices.getByCa({$and:[{_id:idCartparams},{"products.id":idProdsParams}]})
+    if( existProd.owner == req.user.email) res.send({status:'You are the owner product'})
     if(!existProd) return res.send({status:"Error",payload:"Product not found"})
       if(!existCart){
         const prod = await this.cartServices.addProduct(idCartparams,{id:idProdsParams, quant:quant})
@@ -50,8 +51,10 @@ getCart = async (req, res, next) => {
     const cart = []
     if(products.length == 0) return res.send({status:"ok",payload:products})
     const ProdsSearch = products.map( async (product)=>{
-        const {id} = product
+        const {id , quant} = product
         const prods = await this.productServices.getBy({_id:id})
+        ///// no agrego el quantity
+        prods.quantity = quant
         cart.push(prods)
     })
     await Promise.all(ProdsSearch)  
