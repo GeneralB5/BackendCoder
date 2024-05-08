@@ -4,9 +4,8 @@ import mongoSingleton from "../utilis/mongoSingleton.js"
 import customError from "../services/error/customError.js";
 import ErrorNum from "../services/error/errorNum.js";
 const {mode} = program.opts()
-dotenv.config({
-    path: mode === 'production'? './src/.env.production' : '/.env' 
-})
+//path: mode === 'production'? './src/.env.production' : '/.env' 
+dotenv.config({})
 
 const configObject = {
     PORT: process.env.PORT || 4000,
