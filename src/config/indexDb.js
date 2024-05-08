@@ -3,6 +3,7 @@ import { program } from "../utilis/commander.js"
 import mongoSingleton from "../utilis/mongoSingleton.js"
 import customError from "../services/error/customError.js";
 import ErrorNum from "../services/error/errorNum.js";
+import { logger } from "../utilis/logger.js";
 const {mode} = program.opts()
 //path: mode === 'production'? './src/.env.production' : '/.env' 
 dotenv.config({})
@@ -19,7 +20,8 @@ const configObject = {
      email:process.env.email_,
      Stripe_secret:process.env.stripe_secret
 }
-
+logger.info(process.env)
+logger.info(configObject)
 const connectDb = async () => {
     try {
         if(!configObject.mongo_url){
