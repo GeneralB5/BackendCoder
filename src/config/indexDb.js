@@ -1,14 +1,11 @@
 import dotenv from "dotenv"
 import { program } from "../utilis/commander.js"
 import mongoSingleton from "../utilis/mongoSingleton.js"
-import { logger } from "../utilis/logger.js"
 import customError from "../services/error/customError.js";
-import { generateInfoError, generateInfoErrorLogin } from "../services/error/infoError.js";
 import ErrorNum from "../services/error/errorNum.js";
-
 const {mode} = program.opts()
 dotenv.config({
-    path: mode === 'production' ? './src/.env.production' : './src/.env.development' 
+    path: mode === 'production'? './src/.env.production' : './src/.env' 
 })
 
 const configObject = {
