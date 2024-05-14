@@ -200,6 +200,7 @@ postLogout =async (req,res)=>{
     const { email } = req.user
     await this.userServices.lastConnection(email)
     res.clearCookie('token')
+    res.clearCookie('isLogged')
     res.send("Se a deslogueado correctamente")
 }
 postDocuments = async(req,res,next)=>{

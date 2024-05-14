@@ -108,7 +108,7 @@ class daoCarts{
     }
     async putCart(Cid,prod){
             try {
-            return await cartsModel.updateOne({_id:Cid},prod)    
+            return await cartsModel.updateOne({_id:Cid},{products:prod})    
             } catch (error) {
                 logger.error(error)
                 throw Error
