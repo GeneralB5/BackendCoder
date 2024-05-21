@@ -252,6 +252,8 @@ postProfilePic= async(req,res,next)=>{
 
     const {email} = req.user
     const pictureFL = req.file
+    console.log(email)
+    console.log(pictureFL)
     if(!email){
         customError.createError({
           name:"email error",
@@ -268,6 +270,7 @@ postProfilePic= async(req,res,next)=>{
               code:ErrorNum.InsufficientDT
               })
     }
+    
     //update de profile picture
     // await this.userServices.changeProfilePic(email,pictureFL.path)
     // res.send({status:"Ok" , payload: "Changed"})
@@ -284,6 +287,19 @@ getUsersInformation = async(req,res)=>{
 
     res.send({status:"Ok" , payload:arryUsers})
 }
+deleteUser = async(req,res,next)=>{
+try {
+    const {_id,cartId} = req.user
+    if(!_id || !cartId) throw new Error
+    const userDelete = await this.userServices.deleteUser(_id)
+    const cartDelete = await this.cartServices.deleteCart(cartId)
+    if(!userDelete || !cartDelete) throw new Error
+    const response = {User:userDelete,cart:cartDelete}
+    res.status(200).send({status:"Ok",payload:response})
+} catch (error) {
+    next(error)
+}
+}
 deleteInactiveUsers=async(req,res)=>{
     //test it solo accesible para el admin
     const users = await this.userServices.findAllUsers()
@@ -297,8 +313,8 @@ deleteInactiveUsers=async(req,res)=>{
             const date =new Date()
             const numDia = date.getDate()
             console.log(numDia ,num)
-            if(2 <= numDia - num)console.log("borrado")
-            // if(2 > numDia - num)await this.userServices.deleteUser(_id)
+            //if(2 <= numDia - num)console.log("borrado")
+            if(2 > numDia - num)await this.userServices.deleteUser(_id)
         }
     })
     res.send({status:"ok"})

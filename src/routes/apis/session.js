@@ -17,9 +17,10 @@ logsRoutes.post("/documents",[upload.fields([
     {name:'comprobant_domic',maxCount:1},
     {name:'Comprobant_de_estado',maxCount:1}
 ]),passportCall('jwt')],control.postDocuments)
-logsRoutes.post("/picture",[upload.single('profile'),passportCall('jwt')],control.PremiumUserPass)
+logsRoutes.post("/picture",[upload.single('profile'),passportCall('jwt')],control.postProfilePic)
 logsRoutes.get("/user",[passportCall('jwt')] ,control.getUserData)
 logsRoutes.get("/usersInformation",control.getUsersInformation)
+logsRoutes.delete("/deleteUser",[passportCall('jwt')],control.deleteUser)
 logsRoutes.delete("/deleteInactives",control.deleteInactiveUsers)
 logsRoutes.get('/current', [passportCall('jwt'),authentication(["PUBLIC","USUARIO","USUARIO_PREMIUN","ADMIN"])],control.getCurrent)
 logsRoutes.post('/logout',[passportCall('jwt')],control.postLogout)

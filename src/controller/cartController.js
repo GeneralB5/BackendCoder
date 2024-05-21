@@ -97,6 +97,17 @@ deleteCart = async(req,res)=>{
   
 }
 
+pullCartProd = async(req,res,next)=>{
+  try {
+    const {cartId} = req.user
+    const {Pid} = req.body
+    const result = await this.cartServices.deletePpull(cartId,Pid)
+    res.status(200).send({status:'Ok',payload:result})
+  } catch (error) {
+    next(error)
+  }
+}
+
 putCustomCart = async(req,res,next)=>{
   try {
     const {products} =  req.body
