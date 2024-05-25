@@ -8,6 +8,8 @@ import { generateInfoError, generateInfoErrorLogin, generateInfoPremiumUser } fr
 import ErrorNum from "../services/error/errorNum.js";
 import sendEmail from "../utilis/email.js";
 import { incld } from "../helper/middleMulter.js";
+import fs from "fs"
+import { deleteWPathDocs } from "../utilis/deleteImg.js";
 class logsRouter{
     constructor(){
         this.userServices = services
@@ -222,6 +224,7 @@ if(req.files.identification){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"identification")
 }
 
 if(req.files.comprobant_domic){
@@ -230,6 +233,7 @@ if(req.files.comprobant_domic){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"comprobant_domic")
 }
 
 if(req.files.Comprobant_de_estado){
@@ -238,19 +242,17 @@ if(req.files.Comprobant_de_estado){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"Comprobant_de_estado")
 }
-
 res.send({status:"ok"})
-
  } catch (error) {
     next(error)
  }   
 }
 postProfilePic= async(req,res,next)=>{
-
     ///revisar si funciona el actualizar el profile
 
-    const {email} = req.user
+    const {email,thumbnail} = req.user
     const pictureFL = req.file
     console.log(email)
     console.log(pictureFL)
@@ -270,10 +272,18 @@ postProfilePic= async(req,res,next)=>{
               code:ErrorNum.InsufficientDT
               })
     }
-    
+    if(thumbnail){
+        fs.unlink(thumbnail, (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log('¡La imagen ha sido eliminada correctamente!');
+        })
+    }
     //update de profile picture
-    // await this.userServices.changeProfilePic(email,pictureFL.path)
-    // res.send({status:"Ok" , payload: "Changed"})
+     const newUser = await this.userServices.changeProfilePic(email,pictureFL.path)
+     res.send({status:"Ok" , payload:newUser})
 }
 getUsersInformation = async(req,res)=>{
     //test it
@@ -336,5 +346,4 @@ getGitRegister = async (req, res)=>{
  }
 
 }
-
 export default logsRouter
