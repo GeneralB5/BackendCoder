@@ -254,8 +254,7 @@ postProfilePic= async(req,res,next)=>{
 
     const {email,thumbnail} = req.user
     const pictureFL = req.file
-    console.log(email)
-    console.log(pictureFL)
+    
     if(!email){
         customError.createError({
           name:"email error",
