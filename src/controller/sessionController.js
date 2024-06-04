@@ -302,9 +302,13 @@ try {
     if(!_id || !cartId) throw new Error
     const userDelete = await this.userServices.deleteUser(_id)
     const cartDelete = await this.cartServices.deleteCart(cartId)
+    res.clearCookie('token')
+    res.clearCookie('isLogged')
     if(!userDelete || !cartDelete) throw new Error
     const response = {User:userDelete,cart:cartDelete}
-    res.status(200).send({status:"Ok",payload:response})
+    console.log(userDelete)
+    console.log(cartDelete)
+    res.status(200).send({status:"Delete",payload:response})
 } catch (error) {
     next(error)
 }

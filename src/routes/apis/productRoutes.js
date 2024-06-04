@@ -11,6 +11,7 @@ routes.delete('/:id',[passportCall('jwt'),authentication(["USUARIO_PREMIUM","ADM
 routes.put('/:id',[passportCall('jwt'),authentication(["ADMIN"])],Control.PUTPROD)
 routes.post('/',[passportCall('jwt'),authentication(["USUARIO_PREMIUM","ADMIN"]),upload.single('product')] ,Control.POSTPROD)
 routes.get('/:id', Control.GETIDPROD)
+routes.get('/owner/products',[passportCall('jwt'),authentication(["USUARIO_PREMIUM","ADMIN"])],Control.GETBYOWNER)
 
 
 //mocking
