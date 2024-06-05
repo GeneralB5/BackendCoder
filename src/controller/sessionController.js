@@ -8,6 +8,8 @@ import { generateInfoError, generateInfoErrorLogin, generateInfoPremiumUser } fr
 import ErrorNum from "../services/error/errorNum.js";
 import sendEmail from "../utilis/email.js";
 import { incld } from "../helper/middleMulter.js";
+import fs from "fs"
+import { deleteWPathDocs } from "../utilis/deleteImg.js";
 class logsRouter{
     constructor(){
         this.userServices = services
@@ -200,6 +202,7 @@ postLogout =async (req,res)=>{
     const { email } = req.user
     await this.userServices.lastConnection(email)
     res.clearCookie('token')
+    res.clearCookie('isLogged')
     res.send("Se a deslogueado correctamente")
 }
 postDocuments = async(req,res,next)=>{
@@ -221,6 +224,7 @@ if(req.files.identification){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"identification")
 }
 
 if(req.files.comprobant_domic){
@@ -229,6 +233,7 @@ if(req.files.comprobant_domic){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"comprobant_domic")
 }
 
 
@@ -238,20 +243,19 @@ if(req.files.Comprobant_de_estado){
             await this.userServices.updateDco(email,dco.path,dco.fieldname):
             await this.userServices.addNewDocument(email,{name:dco.fieldname,reference:dco.path})
     })
+    deleteWPathDocs(documents,"Comprobant_de_estado")
 }
-
 res.send({status:"ok"})
-
  } catch (error) {
     next(error)
  }   
 }
 postProfilePic= async(req,res,next)=>{
-
     ///revisar si funciona el actualizar el profile
 
-    const {email} = req.user
+    const {email,thumbnail} = req.user
     const pictureFL = req.file
+    
     if(!email){
         customError.createError({
           name:"email error",
@@ -268,9 +272,18 @@ postProfilePic= async(req,res,next)=>{
               code:ErrorNum.InsufficientDT
               })
     }
+    if(thumbnail){
+        fs.unlink(thumbnail, (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log('¡La imagen ha sido eliminada correctamente!');
+        })
+    }
     //update de profile picture
-    // await this.userServices.changeProfilePic(email,pictureFL.path)
-    // res.send({status:"Ok" , payload: "Changed"})
+     const newUser = await this.userServices.changeProfilePic(email,pictureFL.path)
+     res.send({status:"Ok" , payload:newUser})
 }
 getUsersInformation = async(req,res)=>{
     //test it
@@ -283,6 +296,23 @@ getUsersInformation = async(req,res)=>{
     })
 
     res.send({status:"Ok" , payload:arryUsers})
+}
+deleteUser = async(req,res,next)=>{
+try {
+    const {_id,cartId} = req.user
+    if(!_id || !cartId) throw new Error
+    const userDelete = await this.userServices.deleteUser(_id)
+    const cartDelete = await this.cartServices.deleteCart(cartId)
+    res.clearCookie('token')
+    res.clearCookie('isLogged')
+    if(!userDelete || !cartDelete) throw new Error
+    const response = {User:userDelete,cart:cartDelete}
+    console.log(userDelete)
+    console.log(cartDelete)
+    res.status(200).send({status:"Delete",payload:response})
+} catch (error) {
+    next(error)
+}
 }
 deleteInactiveUsers=async(req,res)=>{
     //test it solo accesible para el admin
@@ -297,8 +327,8 @@ deleteInactiveUsers=async(req,res)=>{
             const date =new Date()
             const numDia = date.getDate()
             console.log(numDia ,num)
-            if(2 <= numDia - num)console.log("borrado")
-            // if(2 > numDia - num)await this.userServices.deleteUser(_id)
+            //if(2 <= numDia - num)console.log("borrado")
+            if(2 > numDia - num)await this.userServices.deleteUser(_id)
         }
     })
     res.send({status:"ok"})
@@ -320,5 +350,4 @@ getGitRegister = async (req, res)=>{
  }
 
 }
-
 export default logsRouter

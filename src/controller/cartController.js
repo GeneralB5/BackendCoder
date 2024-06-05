@@ -97,20 +97,30 @@ deleteCart = async(req,res)=>{
   
 }
 
-putCustomCart = async(req,res)=>{
+pullCartProd = async(req,res,next)=>{
   try {
-    const body =  req.body
-    const {Cid} = req.user.cartId
-    if(body.quant > 0) throw new Error
-    const newCart = await this.cartServices.updateC(Cid,{products:body})
+    const {cartId} = req.user
+    const {Pid} = req.body
+    const result = await this.cartServices.deletePpull(cartId,Pid)
+    res.status(200).send({status:'Ok',payload:result})
+  } catch (error) {
+    next(error)
+  }
+}
+
+putCustomCart = async(req,res,next)=>{
+  try {
+    const {products} =  req.body
+    const Cid = req.user.cartId
+    console.log(products)
+    if(!req.body) throw new Error
+    const newCart = await this.cartServices.updateC(Cid,products)
     res.send({
       status:"New cart updated",
       payload:newCart
     })  
   } catch (error) {
-    res.send({
-      status:"Error"
-    })  
+    next(error)
   } 
 }
 

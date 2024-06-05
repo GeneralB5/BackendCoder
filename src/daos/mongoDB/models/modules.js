@@ -54,8 +54,12 @@ const usersSchema= new Schema({
         require:true,
         default:[]
     },
-    last_connection:String
-
+    last_connection:String,
+    thumbnail:{
+        type:String,
+        require:true,
+        default:undefined
+    }
 })
 const  prodsSchema = new Schema({
     title:{

@@ -22,7 +22,6 @@ GETQUERY = async (req, res) => {
   let fn = undefined
   let ln = undefined
   
-  
 if(req.user){
   const role = req.user.role
   if(role != "admin"){
@@ -71,7 +70,14 @@ if(!isNaN(query)&& query != undefined){
   }
   
 }
-
+GETBYOWNER = async (req, res) => {
+  const {email} =  req.user
+  const prodOwner = await this.prodsServices.getBy({owner:email})
+  res.json({
+    status: "success",
+    payload: prodOwner
+  }) 
+}
 DELETEDPROD = async (req, res) => {
   try {
     const {role , email} = req.user

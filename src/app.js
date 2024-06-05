@@ -23,7 +23,7 @@ app.use(urlencoded({limit:'50mb',extended:true}))
 app.use(cors({
   credentials: true, 
   origin: true,
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST','PUT','DELETE'],
   allowedHeaders: ['Content-Type']
 }))
 const specs = swaggerJSDoc(swaggerOptions)
